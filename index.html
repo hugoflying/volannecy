@@ -184,29 +184,23 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 .proposals-close:hover { color: #374151; }
 
 .proposal-row {
-  display: grid; grid-template-columns: 1.5rem 1fr auto;
-  gap: .4rem .75rem; align-items: start;
-  padding: .75rem 1rem; border-bottom: 1px solid #f9fafb;
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem 1rem; border-bottom: 1px solid #f9fafb;
   cursor: pointer; transition: background .12s;
 }
 .proposal-row:last-child { border-bottom: none; }
 .proposal-row:hover { background: #f9fafb; }
 .proposal-row.is-active { background: #eff6ff; border-left: 3px solid var(--hugo); padding-left: calc(1rem - 3px); }
 
-.prop-rank { font-family: 'DM Mono', monospace; font-size: .7rem; color: #d1d5db; text-align: center; padding-top: 3px; }
-.prop-rank.gold   { color: #d97706; font-weight: 600; }
-.prop-rank.silver { color: #6b7280; font-weight: 600; }
-.prop-rank.bronze { color: #92400e; }
+.prop-pill {
+  font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500;
+  background: #111827; color: #fff; padding: 3px 10px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.proposal-row.is-active .prop-pill { background: var(--hugo); }
+.proposal-row:hover:not(.is-active) .prop-pill { background: #374151; }
 
-.prop-pilots { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .3rem; }
-.prop-tag { font-size: .72rem; font-weight: 500; padding: 2px 8px; border-radius: 5px; }
-.prop-detail { font-family: 'DM Mono', monospace; font-size: .6rem; color: #9ca3af; line-height: 1.6; }
-
-.prop-right { text-align: right; }
-.prop-ecart { font-family: 'DM Mono', monospace; font-size: .85rem; font-weight: 500; }
-.prop-ecart-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; color: #9ca3af; }
-.prop-apply { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; margin-top: 3px; }
-.proposal-row:hover .prop-apply { color: var(--hugo); }
+.prop-ecart { font-family: 'DM Mono', monospace; font-size: .72rem; }
 
 /* ── Fairness panel ── */
 .fair-card {
@@ -727,32 +721,12 @@ function showProposals() {
     return;
   }
 
-  const rankSymbol = ['①','②','③','④','⑤','⑥'];
-  const rankClass  = ['gold','silver','bronze','','',''];
-
   $('proposals-list').innerHTML = top.map((r, i) => {
     const isGood = r.ecart <= 50, isMid = r.ecart <= 150;
     const col = isGood ? '#059669' : isMid ? '#d97706' : '#dc2626';
-    const details = PILOTS.map(p => {
-      const k = KEY[p];
-      const pLegs = Object.entries(r.a).filter(([,v])=>v===p).map(([k])=>LEGS[k].label).join(' · ');
-      return `<span class="prop-tag" style="background:${COL[p]}18;color:${COL[p]}">${p}</span>`;
-    }).join('');
-    const legDetails = PILOTS.map(p => {
-      const pLegs = Object.entries(r.a).filter(([,v])=>v===p).map(([lk])=>LEGS[lk].label+' ('+LEGS[lk].cost+'€)').join(' · ');
-      return `${p} : ${pLegs} → ${r.costs[p]}€`;
-    }).join('\n');
     return `<div class="proposal-row" onclick="applyProposal(${i})" id="prop-row-${i}">
-      <div class="prop-rank ${rankClass[i]}">${rankSymbol[i]}</div>
-      <div>
-        <div class="prop-pilots">${details}</div>
-        <div class="prop-detail">${legDetails}</div>
-      </div>
-      <div class="prop-right">
-        <div class="prop-ecart" style="color:${col}">${r.ecart} €</div>
-        <div class="prop-ecart-lbl">d'écart</div>
-        <div class="prop-apply">Appliquer →</div>
-      </div>
+      <span class="prop-pill">Choix ${i+1}</span>
+      <span class="prop-ecart" style="color:${col}">${r.ecart} € d'écart</span>
     </div>`;
   }).join('');
 
