@@ -297,6 +297,43 @@
   }
 
   .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.25rem 0; }
+
+  /* Toggle */
+  .toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    margin-left: auto;
+  }
+  .toggle-label input[type="checkbox"] { display: none; }
+  .toggle-track {
+    width: 36px; height: 20px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-label input:checked ~ .toggle-track { background: #111827; }
+  .toggle-label input:checked ~ .toggle-track .toggle-thumb { transform: translateX(16px); }
+  .toggle-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+  .toggle-label input:checked ~ .toggle-text { color: #111827; }
 </style>
 </head>
 <body>
@@ -431,14 +468,19 @@
   </div>
 
   <!-- Actions -->
-  <div class="is-flex" style="gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+  <div class="is-flex is-align-items-center" style="gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;">
     <button class="btn-main" onclick="applyBest()">✦ Proposition la plus équitable</button>
-    <button class="btn-ghost" onclick="applyOriginal()">Répartition initiale</button>
     <button class="btn-ghost" onclick="resetAll()">Tout effacer</button>
+    <label class="toggle-label" id="toggle-wrap">
+      <input type="checkbox" id="toggle-consecutive" checked onchange="update()">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-text">Pas de legs consécutifs</span>
+    </label>
   </div>
 
   <!-- Warnings -->
   <div class="warning-box mb-3" id="warning-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
+  <div class="warning-box mb-3" id="warning-consecutive">⚠ Legs consécutifs par le même pilote.</div>
   <div class="warning-box mb-3" id="warning-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
 
   <!-- Annecy check -->
@@ -529,150 +571,203 @@
 </div>
 
 <script>
+// ── Data ──────────────────────────────────────────────────────────────────
 const LEGS = {
-  leg1: { label:'Leg 1', route:'Beauvais→Beaune', cost:360, annecy:false, min:160 },
-  leg2: { label:'Leg 2', route:'Beaune→Annecy', cost:270, annecy:true,  min:120 },
-  vol:  { label:'Vol local', route:'Annecy→Annecy', cost:160, annecy:true,  min:70  },
-  leg3: { label:'Leg 3', route:'Annecy→S.Dié', cost:320, annecy:true,  min:140 },
-  leg4: { label:'Leg 4', route:'S.Dié→Verdun', cost:170, annecy:false, min:85  },
-  leg5: { label:'Leg 5', route:'Verdun→Beauvais', cost:215, annecy:false, min:85  },
+  leg1: { label:'Leg 1',     route:'Beauvais→Beaune',  cost:360, annecy:false, min:160 },
+  leg2: { label:'Leg 2',     route:'Beaune→Annecy',    cost:270, annecy:true,  min:120 },
+  vol:  { label:'Vol local', route:'Annecy→Annecy',    cost:160, annecy:true,  min:70  },
+  leg3: { label:'Leg 3',     route:'Annecy→S.Dié',     cost:320, annecy:true,  min:140 },
+  leg4: { label:'Leg 4',     route:'S.Dié→Verdun',     cost:170, annecy:false, min:85  },
+  leg5: { label:'Leg 5',     route:'Verdun→Beauvais',  cost:215, annecy:false, min:85  },
 };
-function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
-const AIRBNB = 62;
-const PILOTS = ['Hugo','Yanis','Cédric'];
+// Ordered sequence — consecutive pairs that cannot share the same pilot
+const SEQUENCE = ['leg1','leg2','vol','leg3','leg4','leg5'];
+const AIRBNB   = 62;
+const PILOTS   = ['Hugo','Yanis','Cédric'];
 
+// ── DOM helpers ──────────────────────────────────────────────────────────
+const el  = id => document.getElementById(id);
+const KEY = { 'Hugo':'hugo', 'Yanis':'yanis', 'Cédric':'cedric' };
+const COL = { 'Hugo':'var(--hugo)', 'Yanis':'var(--yanis)', 'Cédric':'var(--cedric)' };
+const CLS = { 'Hugo':'is-hugo',    'Yanis':'is-yanis',     'Cédric':'is-cedric' };
+function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
+
+// ── Read / write assignments ─────────────────────────────────────────────
 function getA() {
   return {
-    leg1: document.getElementById('sel-leg1').value,
-    leg2: document.getElementById('sel-leg2').value,
-    vol:  document.getElementById('sel-vol').value,
-    leg3: document.getElementById('sel-leg3').value,
+    leg1: el('sel-leg1').value,
+    leg2: el('sel-leg2').value,
+    vol:  el('sel-vol').value,
+    leg3: el('sel-leg3').value,
     leg4: 'Cédric',
-    leg5: document.getElementById('sel-leg5').value,
+    leg5: el('sel-leg5').value,
   };
 }
 
 function setA(a) {
-  document.getElementById('sel-leg1').value = a.leg1||'';
-  document.getElementById('sel-leg2').value = a.leg2||'';
-  document.getElementById('sel-vol').value  = a.vol||'';
-  document.getElementById('sel-leg3').value = a.leg3||'';
-  document.getElementById('sel-leg5').value = a.leg5||'';
+  el('sel-leg1').value = a.leg1 || '';
+  el('sel-leg2').value = a.leg2 || '';
+  el('sel-vol').value  = a.vol  || '';
+  el('sel-leg3').value = a.leg3 || '';
+  el('sel-leg5').value = a.leg5 || '';
   update();
 }
 
-function pilotKey(p) { return p.toLowerCase().replace('é','e'); }
-function pilotClass(p) { return p==='Hugo'?'is-hugo':p==='Yanis'?'is-yanis':'is-cedric'; }
-function pilotColor(p) { return p==='Hugo'?'var(--hugo)':p==='Yanis'?'var(--yanis)':'var(--cedric)'; }
+// ── Validation helpers ───────────────────────────────────────────────────
+function consecutiveActive() { return el('toggle-consecutive').checked; }
 
+function consecutiveViolations(a) {
+  if (!consecutiveActive()) return [];
+  const violations = [];
+  for (let i = 0; i < SEQUENCE.length - 1; i++) {
+    const k1 = SEQUENCE[i], k2 = SEQUENCE[i+1];
+    if (a[k1] && a[k2] && a[k1] === a[k2]) {
+      violations.push(LEGS[k1].label + ' & ' + LEGS[k2].label);
+    }
+  }
+  return violations;
+}
+
+function isValidAssignment(a, enforceConsecutive) {
+  // Each pilot must have an Annecy leg
+  const annecyLegs = ['leg2','vol','leg3'];
+  const ap = new Set(annecyLegs.map(k => a[k]));
+  if (!PILOTS.every(p => ap.has(p))) return false;
+  // No consecutive same pilot (if rule active)
+  if (enforceConsecutive && consecutiveViolations(a).length > 0) return false;
+  return true;
+}
+
+// ── Main update ──────────────────────────────────────────────────────────
 function update() {
   const a = getA();
-  const costs = {Hugo:0,Yanis:0,'Cédric':0};
-  const mins  = {Hugo:0,Yanis:0,'Cédric':0};
-  const legs  = {Hugo:[],Yanis:[],'Cédric':[]};
 
-  for (const [k,p] of Object.entries(a)) {
-    if (p && LEGS[k]) { costs[p]+=LEGS[k].cost; mins[p]+=LEGS[k].min; legs[p].push(LEGS[k].label+' ('+LEGS[k].cost+'€)'); }
+  // Accumulate per-pilot stats
+  const costs = { Hugo:0, Yanis:0, 'Cédric':0 };
+  const mins  = { Hugo:0, Yanis:0, 'Cédric':0 };
+  const legs  = { Hugo:[], Yanis:[], 'Cédric':[] };
+  for (const [k, p] of Object.entries(a)) {
+    if (p && LEGS[k]) {
+      costs[p] += LEGS[k].cost;
+      mins[p]  += LEGS[k].min;
+      legs[p].push(LEGS[k].label + ' (' + LEGS[k].cost + '€)');
+    }
   }
 
-  // Style selects
+  // Color selects
   ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
-    const s = document.getElementById('sel-'+k);
-    s.className = 'pilot-select' + (s.value ? ' '+pilotClass(s.value) : '');
+    const s = el('sel-' + k);
+    s.className = 'pilot-select' + (s.value ? ' ' + CLS[s.value] : '');
   });
 
-  const allAssigned = Object.values(a).every(v=>v);
-  document.getElementById('warning-unassigned').classList.toggle('is-visible', !allAssigned);
+  const violations = consecutiveViolations(a);
+
+  // Highlight consecutive offenders in red — only when toggle is ON
+  SEQUENCE.forEach((k) => {
+    if (k === 'leg4') return;
+    const card = el('card-' + k);
+    if (!card) return;
+    const isOffender = consecutiveActive() && violations.some(v => v.includes(LEGS[k].label));
+    card.style.borderColor = isOffender ? '#dc2626' : '';
+    card.style.background  = isOffender ? '#fff5f5' : '';
+  });
+
+  const allAssigned = Object.values(a).every(v => v);
+  el('warning-unassigned').classList.toggle('is-visible', !allAssigned);
+
+  // Consecutive warning — only shown when toggle is ON
+  const showConsec = consecutiveActive() && violations.length > 0;
+  el('warning-consecutive').classList.toggle('is-visible', showConsec);
+  if (showConsec) {
+    el('warning-consecutive').textContent = '⚠ Legs consécutifs par le même pilote : ' + violations.join(', ');
+  }
 
   // Annecy check
   const annecyLegs = ['leg2','vol','leg3'];
-  const annecyMap = {Hugo:[],Yanis:[],'Cédric':[]};
+  const annecyMap  = { Hugo:[], Yanis:[], 'Cédric':[] };
   annecyLegs.forEach(k => { if (a[k]) annecyMap[a[k]].push(LEGS[k].label); });
   const annecyOk = PILOTS.every(p => annecyMap[p].length > 0);
-  document.getElementById('warning-annecy').classList.toggle('is-visible', allAssigned && !annecyOk);
+  el('warning-annecy').classList.toggle('is-visible', allAssigned && !annecyOk);
 
   PILOTS.forEach(p => {
-    const k = pilotKey(p);
-    const dot = document.getElementById('dot-'+k);
-    const lbl = document.getElementById('annecy-'+k);
+    const k = KEY[p];
     const has = annecyMap[p].length > 0;
-    dot.style.background = has ? pilotColor(p) : '#e5e7eb';
-    lbl.textContent = p+' · '+(has ? annecyMap[p].join(', ') : '—');
-    lbl.style.color = has ? '#374151' : '#9ca3af';
+    el('dot-' + k).style.background = has ? COL[p] : '#e5e7eb';
+    el('annecy-' + k).textContent   = p + ' · ' + (has ? annecyMap[p].join(', ') : '—');
+    el('annecy-' + k).style.color   = has ? '#374151' : '#9ca3af';
   });
 
-  // Summaries
+  // Pilot summary cards
+  PILOTS.forEach(p => {
+    const k = KEY[p];
+    el(k + '-total').textContent  = costs[p] > 0 ? costs[p] + ' €' : '—';
+    el(k + '-legs').textContent   = legs[p].length ? legs[p].join('\n') : '—';
+    el(k + '-airbnb').textContent = allAssigned ? 'avec Airbnb : ' + (costs[p] + AIRBNB) + ' €' : '';
+    el(k + '-time').textContent   = mins[p] > 0 ? fmtMin(mins[p]) : '—';
+    const wrap = el('bar-' + k + '-wrap');
+    wrap.style.display = allAssigned ? 'block' : 'none';
+    if (allAssigned) {
+      const maxC = Math.max(...Object.values(costs));
+      const pct  = maxC > 0 ? Math.round((costs[p] / maxC) * 100) : 0;
+      el('bar-' + k).style.width           = pct + '%';
+      el('bar-' + k + '-label').textContent = pct + '% du max';
+    }
+  });
+
+  // Fairness
   if (!allAssigned) {
-    PILOTS.forEach(p => {
-      const k = pilotKey(p);
-      document.getElementById(k+'-total').textContent = costs[p]>0?costs[p]+' €':'—';
-      document.getElementById(k+'-legs').textContent  = legs[p].length?legs[p].join('\n'):'—';
-      document.getElementById(k+'-airbnb').textContent = '';
-      document.getElementById(k+'-time').textContent = mins[p]>0?fmtMin(mins[p]):'—';
-      document.getElementById('bar-'+k+'-wrap').style.display='none';
-    });
-    document.getElementById('ecart-value').textContent='—';
-    document.getElementById('ecart-value').style.color='#111827';
-    document.getElementById('status-dot').style.background='#d1d5db';
-    document.getElementById('status-text').textContent="En attente d'attribution";
-    document.getElementById('status-chip').style.cssText='background:#f3f4f6;color:#9ca3af;';
+    el('ecart-value').textContent = '—';
+    el('ecart-value').style.color = '#111827';
+    el('status-dot').style.background = '#d1d5db';
+    el('status-text').textContent = "En attente d'attribution";
+    el('status-chip').style.cssText = 'background:#f3f4f6;color:#9ca3af;';
     return;
   }
 
-  const vals = Object.values(costs);
-  const maxC = Math.max(...vals), minC = Math.min(...vals);
+  const vals  = Object.values(costs);
+  const maxC  = Math.max(...vals), minC = Math.min(...vals);
   const ecart = maxC - minC;
-
-  PILOTS.forEach(p => {
-    const k = pilotKey(p);
-    document.getElementById(k+'-total').textContent = costs[p]+' €';
-    document.getElementById(k+'-legs').textContent  = legs[p].join('\n')||'—';
-    document.getElementById(k+'-airbnb').textContent = 'avec Airbnb : '+(costs[p]+AIRBNB)+' €';
-    document.getElementById(k+'-time').textContent = fmtMin(mins[p]);
-    const wrap = document.getElementById('bar-'+k+'-wrap');
-    wrap.style.display='block';
-    const pct = maxC>0?Math.round((costs[p]/maxC)*100):0;
-    document.getElementById('bar-'+k).style.width=pct+'%';
-    document.getElementById('bar-'+k+'-label').textContent=pct+'% du max';
-  });
-
-  document.getElementById('ecart-value').textContent=ecart+' €';
-  const isGood=ecart<=50, isMid=ecart<=150;
-  const col = isGood?'#059669':isMid?'#d97706':'#dc2626';
-  const bgc = isGood?'#ecfdf5':isMid?'#fffbeb':'#fef2f2';
-  document.getElementById('ecart-value').style.color=col;
-  document.getElementById('status-dot').style.background=col;
-  document.getElementById('status-chip').style.cssText=`background:${bgc};color:${col};`;
-  document.getElementById('status-text').textContent=isGood?'Très équitable ✓':isMid?'Acceptable':'Écart important';
+  el('ecart-value').textContent = ecart + ' €';
+  const isGood = ecart <= 50, isMid = ecart <= 150;
+  const col = isGood ? '#059669' : isMid ? '#d97706' : '#dc2626';
+  const bgc = isGood ? '#ecfdf5' : isMid ? '#fffbeb' : '#fef2f2';
+  el('ecart-value').style.color = col;
+  el('status-dot').style.background = col;
+  el('status-chip').style.cssText = `background:${bgc};color:${col};`;
+  el('status-text').textContent = isGood ? 'Très équitable ✓' : isMid ? 'Acceptable' : 'Écart important';
 }
 
+// ── Brute-force best assignment ──────────────────────────────────────────
 function applyBest() {
   const free = ['leg1','leg2','vol','leg3','leg5'];
-  let bestEcart=Infinity, bestA=null;
-  function go(i,cur) {
-    if (i===free.length) {
-      const ann=['leg2','vol','leg3'];
-      const ap=new Set(ann.map(k=>cur[k]));
-      if (!PILOTS.every(p=>ap.has(p))) return;
-      const c={Hugo:0,Yanis:0,'Cédric':170};
-      for (const [k,p] of Object.entries(cur)) c[p]+=LEGS[k].cost;
-      const e=Math.max(...Object.values(c))-Math.min(...Object.values(c));
-      if (e<bestEcart){bestEcart=e;bestA={...cur,leg4:'Cédric'};}
+  let bestEcart = Infinity, bestA = null;
+
+  function go(i, cur) {
+    if (i === free.length) {
+      const full = { ...cur, leg4: 'Cédric' };
+      if (!isValidAssignment(full, consecutiveActive())) return;
+      const c = { Hugo:0, Yanis:0, 'Cédric':0 };
+      for (const [k, p] of Object.entries(full)) c[p] += LEGS[k].cost;
+      const e = Math.max(...Object.values(c)) - Math.min(...Object.values(c));
+      if (e < bestEcart) { bestEcart = e; bestA = full; }
       return;
     }
-    for (const p of PILOTS){cur[free[i]]=p;go(i+1,cur);}
+    for (const p of PILOTS) { cur[free[i]] = p; go(i + 1, cur); }
   }
-  go(0,{});
+
+  go(0, {});
   if (bestA) setA(bestA);
 }
 
 function applyOriginal() {
-  setA({leg1:'Hugo',leg2:'Yanis',vol:'Hugo',leg3:'Cédric',leg4:'Cédric',leg5:'Yanis'});
+  // Original was Hugo:L1+Vol, Yanis:L2+L5, Cédric:L3+L4
+  // But L3+L4 are consecutive → violates new rule → use best instead
+  applyBest();
 }
 
 function resetAll() {
-  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id=>{
-    document.getElementById(id).value='';
+  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id => {
+    el(id).value = '';
   });
   update();
 }
