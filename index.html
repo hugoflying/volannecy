@@ -197,6 +197,10 @@
     margin-top: 3px;
   }
 
+  .pilot-time-wrap { text-align: center; min-width: 52px; }
+  .pilot-time-num { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 500; color: #111827; line-height: 1; }
+  .pilot-time-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #9ca3af; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+
   .bar-wrap { flex: 1; max-width: 120px; }
   .bar-bg { height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
   .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
@@ -457,6 +461,10 @@
         <div class="bar-bg"><div class="bar-fill" id="bar-hugo" style="background:var(--hugo)"></div></div>
         <div class="bar-label" id="bar-hugo-label"></div>
       </div>
+      <div class="pilot-time-wrap">
+        <div class="pilot-time-num" id="hugo-time">—</div>
+        <div class="pilot-time-label">vol</div>
+      </div>
       <div class="pilot-card-total">
         <div class="pilot-total-num" id="hugo-total">—</div>
         <div class="pilot-total-airbnb" id="hugo-airbnb"></div>
@@ -471,6 +479,10 @@
         <div class="bar-bg"><div class="bar-fill" id="bar-yanis" style="background:var(--yanis)"></div></div>
         <div class="bar-label" id="bar-yanis-label"></div>
       </div>
+      <div class="pilot-time-wrap">
+        <div class="pilot-time-num" id="yanis-time">—</div>
+        <div class="pilot-time-label">vol</div>
+      </div>
       <div class="pilot-card-total">
         <div class="pilot-total-num" id="yanis-total">—</div>
         <div class="pilot-total-airbnb" id="yanis-airbnb"></div>
@@ -484,6 +496,10 @@
       <div class="bar-wrap" id="bar-cedric-wrap" style="display:none">
         <div class="bar-bg"><div class="bar-fill" id="bar-cedric" style="background:var(--cedric)"></div></div>
         <div class="bar-label" id="bar-cedric-label"></div>
+      </div>
+      <div class="pilot-time-wrap">
+        <div class="pilot-time-num" id="cedric-time">—</div>
+        <div class="pilot-time-label">vol</div>
       </div>
       <div class="pilot-card-total">
         <div class="pilot-total-num" id="cedric-total">—</div>
@@ -514,13 +530,14 @@
 
 <script>
 const LEGS = {
-  leg1: { label:'Leg 1', route:'Beauvais→Beaune', cost:360, annecy:false },
-  leg2: { label:'Leg 2', route:'Beaune→Annecy', cost:270, annecy:true },
-  vol:  { label:'Vol local', route:'Annecy→Annecy', cost:160, annecy:true },
-  leg3: { label:'Leg 3', route:'Annecy→S.Dié', cost:320, annecy:true },
-  leg4: { label:'Leg 4', route:'S.Dié→Verdun', cost:170, annecy:false },
-  leg5: { label:'Leg 5', route:'Verdun→Beauvais', cost:215, annecy:false },
+  leg1: { label:'Leg 1', route:'Beauvais→Beaune', cost:360, annecy:false, min:160 },
+  leg2: { label:'Leg 2', route:'Beaune→Annecy', cost:270, annecy:true,  min:120 },
+  vol:  { label:'Vol local', route:'Annecy→Annecy', cost:160, annecy:true,  min:70  },
+  leg3: { label:'Leg 3', route:'Annecy→S.Dié', cost:320, annecy:true,  min:140 },
+  leg4: { label:'Leg 4', route:'S.Dié→Verdun', cost:170, annecy:false, min:85  },
+  leg5: { label:'Leg 5', route:'Verdun→Beauvais', cost:215, annecy:false, min:85  },
 };
+function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
 const AIRBNB = 62;
 const PILOTS = ['Hugo','Yanis','Cédric'];
 
@@ -551,10 +568,11 @@ function pilotColor(p) { return p==='Hugo'?'var(--hugo)':p==='Yanis'?'var(--yani
 function update() {
   const a = getA();
   const costs = {Hugo:0,Yanis:0,'Cédric':0};
+  const mins  = {Hugo:0,Yanis:0,'Cédric':0};
   const legs  = {Hugo:[],Yanis:[],'Cédric':[]};
 
   for (const [k,p] of Object.entries(a)) {
-    if (p && LEGS[k]) { costs[p]+=LEGS[k].cost; legs[p].push(LEGS[k].label+' ('+LEGS[k].cost+'€)'); }
+    if (p && LEGS[k]) { costs[p]+=LEGS[k].cost; mins[p]+=LEGS[k].min; legs[p].push(LEGS[k].label+' ('+LEGS[k].cost+'€)'); }
   }
 
   // Style selects
@@ -590,6 +608,7 @@ function update() {
       document.getElementById(k+'-total').textContent = costs[p]>0?costs[p]+' €':'—';
       document.getElementById(k+'-legs').textContent  = legs[p].length?legs[p].join('\n'):'—';
       document.getElementById(k+'-airbnb').textContent = '';
+      document.getElementById(k+'-time').textContent = mins[p]>0?fmtMin(mins[p]):'—';
       document.getElementById('bar-'+k+'-wrap').style.display='none';
     });
     document.getElementById('ecart-value').textContent='—';
@@ -609,6 +628,7 @@ function update() {
     document.getElementById(k+'-total').textContent = costs[p]+' €';
     document.getElementById(k+'-legs').textContent  = legs[p].join('\n')||'—';
     document.getElementById(k+'-airbnb').textContent = 'avec Airbnb : '+(costs[p]+AIRBNB)+' €';
+    document.getElementById(k+'-time').textContent = fmtMin(mins[p]);
     const wrap = document.getElementById('bar-'+k+'-wrap');
     wrap.style.display='block';
     const pct = maxC>0?Math.round((costs[p]/maxC)*100):0;
