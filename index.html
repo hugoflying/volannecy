@@ -123,18 +123,27 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 .pilot-card {
   background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
   padding: .85rem 1rem; display: grid; gap: .35rem .75rem;
-  grid-template-columns: 4px auto 1fr auto;
+  grid-template-columns: 4px 1fr auto;
   grid-template-rows: auto auto auto;
   align-items: center;
 }
 
 .p-strip { grid-column: 1; grid-row: 1 / 4; width: 4px; border-radius: 4px; align-self: stretch; }
-.p-name  { grid-column: 2; grid-row: 1; font-size: .95rem; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
-.p-legs  { grid-column: 3; grid-row: 1; font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; line-height: 1.6; }
-.p-right { grid-column: 4; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: flex-end; gap: .35rem; }
 
-.p-bar-row   { grid-column: 2 / 4; grid-row: 2; display: flex; align-items: center; gap: .5rem; }
-.p-meta-row  { grid-column: 2 / 5; grid-row: 3; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.p-name-legs {
+  grid-column: 2; grid-row: 1;
+  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; min-width: 0;
+}
+.p-name  { font-size: .95rem; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; flex-shrink: 0; }
+.p-legs-inline {
+  font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af;
+  line-height: 1.5; min-width: 0;
+}
+
+.p-right { grid-column: 3; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; }
+
+.p-bar-row   { grid-column: 2 / 3; grid-row: 2; display: flex; align-items: center; gap: .5rem; }
+.p-meta-row  { grid-column: 2 / 4; grid-row: 3; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
 
 .bar-bg   { flex: 1; height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
@@ -273,13 +282,6 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   <div class="warn" id="w-consec"></div>
   <div class="warn" id="w-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
 
-  <!-- Annecy dots -->
-  <div class="annecy-row">
-    <div class="annecy-item"><div class="annecy-dot" id="dot-hugo"></div><span id="annecy-hugo">Hugo · —</span></div>
-    <div class="annecy-item"><div class="annecy-dot" id="dot-yanis"></div><span id="annecy-yanis">Yanis · —</span></div>
-    <div class="annecy-item"><div class="annecy-dot" id="dot-cedric"></div><span id="annecy-cedric">Cédric · —</span></div>
-  </div>
-
   <hr class="divider">
 
   <!-- Pilot cards -->
@@ -287,8 +289,10 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
     <div class="pilot-card" id="pc-hugo">
       <div class="p-strip" id="ps-hugo" style="background:var(--hugo)"></div>
-      <div class="p-name" style="color:var(--hugo)">Hugo</div>
-      <div class="p-legs" id="pl-hugo">—</div>
+      <div class="p-name-legs">
+        <span class="p-name" style="color:var(--hugo)">Hugo</span>
+        <span class="p-legs-inline" id="pl-hugo">—</span>
+      </div>
       <div class="p-right">
         <div class="p-total" id="pt-hugo">—</div>
         <div class="p-airbnb" id="pa-hugo"></div>
@@ -305,8 +309,10 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
     <div class="pilot-card" id="pc-yanis">
       <div class="p-strip" id="ps-yanis" style="background:var(--yanis)"></div>
-      <div class="p-name" style="color:var(--yanis)">Yanis</div>
-      <div class="p-legs" id="pl-yanis">—</div>
+      <div class="p-name-legs">
+        <span class="p-name" style="color:var(--yanis)">Yanis</span>
+        <span class="p-legs-inline" id="pl-yanis">—</span>
+      </div>
       <div class="p-right">
         <div class="p-total" id="pt-yanis">—</div>
         <div class="p-airbnb" id="pa-yanis"></div>
@@ -323,8 +329,10 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
     <div class="pilot-card" id="pc-cedric">
       <div class="p-strip" id="ps-cedric" style="background:var(--cedric)"></div>
-      <div class="p-name" style="color:var(--cedric)">Cédric</div>
-      <div class="p-legs" id="pl-cedric">—</div>
+      <div class="p-name-legs">
+        <span class="p-name" style="color:var(--cedric)">Cédric</span>
+        <span class="p-legs-inline" id="pl-cedric">—</span>
+      </div>
       <div class="p-right">
         <div class="p-total" id="pt-cedric">—</div>
         <div class="p-airbnb" id="pa-cedric"></div>
@@ -468,19 +476,11 @@ function update() {
   const allOk = Object.values(a).every(v => v);
   $('w-unassigned').classList.toggle('on', !allOk);
 
-  // Annecy
+  // Annecy check (for warning only)
   const annMap = {Hugo:[],Yanis:[],'Cédric':[]};
   ['leg2','vol','leg3'].forEach(k => { if (a[k]) annMap[a[k]].push(LEGS[k].label); });
   const annOk = PILOTS.every(p => annMap[p].length > 0);
   $('w-annecy').classList.toggle('on', allOk && !annOk);
-
-  PILOTS.forEach(p => {
-    const k = KEY[p];
-    const has = annMap[p].length > 0;
-    $('dot-'+k).style.background = has ? COL[p] : '#e5e7eb';
-    $('annecy-'+k).textContent = p+' · '+(has ? annMap[p].join(', ') : '—');
-    $('annecy-'+k).style.color = has ? '#374151' : '#9ca3af';
-  });
 
   // Pilot cards — partial update even when not all assigned
   const maxC = allOk ? Math.max(...Object.values(costs)) : 0;
@@ -488,14 +488,16 @@ function update() {
   PILOTS.forEach(p => {
     const k = KEY[p];
     $('pt-'+k).textContent  = costs[p] > 0 ? costs[p]+' €' : '—';
-    $('pl-'+k).textContent  = legs[p].length ? legs[p].join('\n') : '—';
+    $('pl-'+k).textContent  = legs[p].length ? legs[p].join(' · ') : '—';
     $('pa-'+k).textContent  = allOk ? 'avec Airbnb : '+(costs[p]+AIRBNB)+' €' : '';
     const showBar = allOk;
     $('pbar-'+k).style.display = showBar ? 'flex' : 'none';
     if (showBar) {
-      const pct = maxC > 0 ? Math.round((costs[p]/maxC)*100) : 0;
+      const pct    = maxC > 0 ? Math.round((costs[p]/maxC)*100) : 0;
+      const total  = Object.values(costs).reduce((s,v)=>s+v,0);
+      const share  = total > 0 ? Math.round((costs[p]/total)*100) : 0;
       $('bf-'+k).style.width = pct+'%';
-      $('bl-'+k).textContent = pct+'% du max';
+      $('bl-'+k).textContent = share+'% du total vols';
     }
     $('pm-'+k).style.display = 'none';
   });
