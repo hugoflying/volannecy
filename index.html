@@ -275,11 +275,17 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
       <span class="toggle-txt">Pas de legs consécutifs</span>
     </label>
+    <label class="toggle-lbl">
+      <input type="checkbox" id="toggle-daily" checked onchange="update()">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-txt">Vol chaque jour</span>
+    </label>
   </div>
 
   <!-- Warnings -->
   <div class="warn" id="w-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
   <div class="warn" id="w-consec"></div>
+  <div class="warn" id="w-daily"></div>
   <div class="warn" id="w-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
 
   <hr class="divider">
@@ -397,6 +403,20 @@ const $ = id => document.getElementById(id);
 
 function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
 function consecOn() { return $('toggle-consec').checked; }
+function dailyOn()  { return $('toggle-daily').checked; }
+
+// Day 1: leg1, leg2, vol — Day 2: leg3, leg4, leg5
+function getDailyViolations(a) {
+  if (!dailyOn()) return [];
+  const day1 = ['leg1','leg2','vol'];
+  const day2 = ['leg3','leg4','leg5'];
+  const missing = [];
+  PILOTS.forEach(p => {
+    if (!day1.some(k => a[k] === p)) missing.push(p + ' ne vole pas le mardi');
+    if (!day2.some(k => a[k] === p)) missing.push(p + ' ne vole pas le mercredi');
+  });
+  return missing;
+}
 
 function getA() {
   return {
@@ -429,10 +449,11 @@ function getViolations(a) {
   return v;
 }
 
-function isValid(a, enforceConsec) {
+function isValid(a, enforceConsec, enforceDaily) {
   const ann = new Set(['leg2','vol','leg3'].map(k => a[k]));
   if (!PILOTS.every(p => ann.has(p))) return false;
   if (enforceConsec && getViolations(a).length > 0) return false;
+  if (enforceDaily  && getDailyViolations(a).length > 0) return false;
   return true;
 }
 
@@ -481,6 +502,16 @@ function update() {
   ['leg2','vol','leg3'].forEach(k => { if (a[k]) annMap[a[k]].push(LEGS[k].label); });
   const annOk = PILOTS.every(p => annMap[p].length > 0);
   $('w-annecy').classList.toggle('on', allOk && !annOk);
+
+  // Daily warning
+  const dailyViols = getDailyViolations(a);
+  const wd = $('w-daily');
+  if (dailyOn() && dailyViols.length) {
+    wd.textContent = '⚠ ' + dailyViols.join(', ');
+    wd.classList.add('on');
+  } else {
+    wd.classList.remove('on');
+  }
 
   // Pilot cards — partial update even when not all assigned
   const maxC = allOk ? Math.max(...Object.values(costs)) : 0;
@@ -559,7 +590,7 @@ function applyBest() {
   function go(i, cur) {
     if (i === free.length) {
       const full = {...cur, leg4:'Cédric'};
-      if (!isValid(full, consecOn())) return;
+      if (!isValid(full, consecOn(), dailyOn())) return;
       const c = {Hugo:0,Yanis:0,'Cédric':0};
       for (const [k,p] of Object.entries(full)) c[p] += LEGS[k].cost;
       const e = Math.max(...Object.values(c)) - Math.min(...Object.values(c));
