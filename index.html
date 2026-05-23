@@ -3,540 +3,278 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Répartition des legs — 3 pilotes</title>
+<title>Répartition des legs</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --hugo: #2563eb;
-    --hugo-light: #eff6ff;
-    --hugo-border: #bfdbfe;
-    --yanis: #059669;
-    --yanis-light: #ecfdf5;
-    --yanis-border: #a7f3d0;
-    --cedric: #d97706;
-    --cedric-light: #fffbeb;
-    --cedric-border: #fcd34d;
-    --radius: 10px;
-  }
+:root {
+  --hugo:          #2563eb;
+  --hugo-light:    #eff6ff;
+  --hugo-border:   #bfdbfe;
+  --yanis:         #059669;
+  --yanis-light:   #ecfdf5;
+  --yanis-border:  #a7f3d0;
+  --cedric:        #d97706;
+  --cedric-light:  #fffbeb;
+  --cedric-border: #fcd34d;
+  --r: 10px;
+}
 
-  *, body { font-family: 'DM Sans', sans-serif; }
-  code, .mono { font-family: 'DM Mono', monospace; }
+*, body { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
+.mono    { font-family: 'DM Mono', monospace; }
 
-  body { background: #f8f8f6; min-height: 100vh; padding: 2rem 1rem; }
+body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
-  .page-title { font-size: 2rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; }
-  .page-sub { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; }
+/* ── Header ── */
+.hdr { border-bottom: 2px solid #111827; padding-bottom: .75rem; margin-bottom: 1.25rem; }
+.hdr h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.hdr-sub { font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af; text-transform: uppercase; letter-spacing: .1em; }
 
-  .constraint-bar {
-    background: var(--cedric-light);
-    border: 1px solid var(--cedric-border);
-    border-radius: var(--radius);
-    padding: 0.6rem 1rem;
-    font-size: 0.78rem;
-    font-family: 'DM Mono', monospace;
-    color: #92400e;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+/* ── Constraint bar ── */
+.cbar {
+  background: var(--cedric-light); border: 1px solid var(--cedric-border);
+  border-radius: var(--r); padding: .55rem .9rem;
+  font-family: 'DM Mono', monospace; font-size: .72rem; color: #92400e;
+  display: flex; align-items: flex-start; gap: .5rem; margin-bottom: 1.25rem;
+}
 
-  .leg-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    transition: border-color 0.2s;
-    height: 100%;
-  }
+/* ── Day label ── */
+.day-lbl {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  text-transform: uppercase; letter-spacing: .12em; color: #9ca3af;
+  border-bottom: .5px solid #e5e7eb; padding-bottom: .4rem; margin-bottom: .6rem;
+}
 
-  .leg-card.is-locked {
-    background: var(--cedric-light);
-    border-color: var(--cedric-border);
-  }
+/* ── Leg cards grid ── */
+.legs-day { display: grid; gap: .6rem; margin-bottom: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 600px) { .legs-day { grid-template-columns: repeat(3,1fr); } }
 
-  .leg-id {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.25rem;
-  }
+.leg-card {
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: var(--r); padding: .85rem 1rem; transition: border-color .2s, background .2s;
+}
+.leg-card.locked { background: var(--cedric-light); border-color: var(--cedric-border); }
+.leg-card.bad    { border-color: #dc2626 !important; background: #fff5f5 !important; }
 
-  .leg-cost {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #111827;
-  }
+.leg-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .2rem; }
+.leg-id  { font-family: 'DM Mono', monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; display: flex; align-items: center; gap: .35rem; }
+.leg-cost { font-family: 'DM Mono', monospace; font-size: .82rem; font-weight: 500; color: #111827; }
+.leg-route { font-size: .9rem; font-weight: 500; letter-spacing: -.01em; }
+.leg-icao  { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af; margin-bottom: .6rem; }
+.locked-tag { background: var(--cedric); color: #fff; font-size: .55rem; padding: 1px 5px; border-radius: 3px; font-weight: 500; }
 
-  .leg-route { font-size: 0.95rem; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 0.1rem; }
-  .leg-icao { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #9ca3af; margin-bottom: 0.75rem; }
+/* ── Select ── */
+.psel {
+  width: 100%; padding: .45rem .75rem; border-radius: 8px; border: 1px solid #e5e7eb;
+  background: #f9fafb; font-family: 'DM Sans', sans-serif;
+  font-size: .85rem; font-weight: 500; color: #374151; cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+  transition: all .15s;
+}
+.psel:focus { outline: none; border-color: #374151; }
+.psel:disabled { opacity: .65; cursor: not-allowed; }
+.psel.is-hugo   { border-color: var(--hugo-border);   background-color: var(--hugo-light);   color: var(--hugo); }
+.psel.is-yanis  { border-color: var(--yanis-border);  background-color: var(--yanis-light);  color: var(--yanis); }
+.psel.is-cedric { border-color: var(--cedric-border); background-color: var(--cedric-light); color: var(--cedric); }
 
-  .locked-tag {
-    background: var(--cedric);
-    color: #fff;
-    font-size: 0.58rem;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-weight: 500;
-  }
+/* ── Actions bar ── */
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.1rem; }
 
-  .pilot-select {
-    width: 100%;
-    padding: 0.4rem 0.75rem;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    padding-right: 30px;
-    transition: all 0.15s;
-  }
+.btn-main {
+  background: #111827; color: #fff; border: none; border-radius: 8px;
+  padding: .55rem 1rem; font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; font-weight: 500; cursor: pointer; transition: background .15s;
+}
+.btn-main:hover { background: #374151; }
 
-  .pilot-select:focus { outline: none; border-color: #374151; }
-  .pilot-select:disabled { opacity: 0.65; cursor: not-allowed; }
-  .pilot-select.is-hugo { border-color: var(--hugo-border); background-color: var(--hugo-light); color: var(--hugo); }
-  .pilot-select.is-yanis { border-color: var(--yanis-border); background-color: var(--yanis-light); color: var(--yanis); }
-  .pilot-select.is-cedric { border-color: var(--cedric-border); background-color: var(--cedric-light); color: var(--cedric); }
+.btn-ghost {
+  background: #fff; color: #374151; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: .5rem .9rem; font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; font-weight: 400; cursor: pointer; transition: all .15s;
+}
+.btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
 
-  /* Buttons */
-  .btn-main {
-    background: #111827;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.55rem 1.1rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-    white-space: nowrap;
-  }
-  .btn-main:hover { background: #374151; }
+/* ── Toggle ── */
+.toggle-lbl { display: inline-flex; align-items: center; gap: .45rem; cursor: pointer; user-select: none; margin-left: auto; }
+.toggle-lbl input { display: none; }
+.toggle-track { width: 34px; height: 19px; background: #e5e7eb; border-radius: 20px; position: relative; transition: background .2s; flex-shrink: 0; }
+.toggle-thumb { position: absolute; top: 2.5px; left: 2.5px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.toggle-lbl input:checked ~ .toggle-track { background: #111827; }
+.toggle-lbl input:checked ~ .toggle-track .toggle-thumb { transform: translateX(15px); }
+.toggle-txt { font-family: 'DM Mono', monospace; font-size: .68rem; color: #9ca3af; }
+.toggle-lbl input:checked ~ .toggle-txt { color: #111827; }
 
-  .btn-ghost {
-    background: #fff;
-    color: #374151;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
+/* ── Warnings ── */
+.warn { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: .5rem .9rem; font-family: 'DM Mono', monospace; font-size: .7rem; color: #92400e; display: none; margin-bottom: .6rem; }
+.warn.on { display: block; }
 
-  /* Pilot cards */
-  .pilot-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.25s;
-  }
+/* ── Annecy row ── */
+.annecy-row { background: #f9fafb; border-radius: 8px; padding: .55rem .9rem; display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af; margin-bottom: 1rem; }
+.annecy-item { display: flex; align-items: center; gap: 5px; }
+.annecy-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #e5e7eb; }
 
-  .pilot-strip {
-    width: 3px;
-    border-radius: 3px;
-    align-self: stretch;
-    flex-shrink: 0;
-  }
+.divider { border: none; border-top: 1px solid #f3f4f6; margin: .85rem 0; }
 
-  .pilot-card-name {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    min-width: 60px;
-  }
+/* ── Pilot cards ── */
+.pilot-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 
-  .pilot-card-legs {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    color: #9ca3af;
-    flex: 1;
-    line-height: 1.7;
-  }
+.pilot-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
+  padding: .85rem 1rem; display: grid; gap: .35rem .75rem;
+  grid-template-columns: 4px auto 1fr auto;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+}
 
-  .pilot-card-total {
-    text-align: right;
-  }
+.p-strip { grid-column: 1; grid-row: 1 / 4; width: 4px; border-radius: 4px; align-self: stretch; }
+.p-name  { grid-column: 2; grid-row: 1; font-size: .95rem; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
+.p-legs  { grid-column: 3; grid-row: 1; font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; line-height: 1.6; }
+.p-right { grid-column: 4; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: flex-end; gap: .35rem; }
 
-  .pilot-total-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 1.35rem;
-    font-weight: 500;
-    color: #111827;
-    line-height: 1;
-  }
+.p-bar-row   { grid-column: 2 / 4; grid-row: 2; display: flex; align-items: center; gap: .5rem; }
+.p-meta-row  { grid-column: 2 / 5; grid-row: 3; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
 
-  .pilot-total-airbnb {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: #9ca3af;
-    margin-top: 3px;
-  }
+.bar-bg   { flex: 1; height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+.bar-lbl  { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; white-space: nowrap; }
 
-  .pilot-time-wrap { text-align: center; min-width: 52px; }
-  .pilot-time-num { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 500; color: #111827; line-height: 1; }
-  .pilot-time-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #9ca3af; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+.p-total { font-family: 'DM Mono', monospace; font-size: 1.25rem; font-weight: 500; color: #111827; line-height: 1; }
+.p-airbnb { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; }
+.p-time  { font-family: 'DM Mono', monospace; font-size: .72rem; color: #6b7280; background: #f3f4f6; border-radius: 5px; padding: 2px 6px; white-space: nowrap; }
+.p-delta { font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500; padding: 2px 7px; border-radius: 5px; }
+.delta-pos  { color: #dc2626; background: #fef2f2; }
+.delta-neg  { color: #059669; background: #ecfdf5; }
+.delta-zero { color: #9ca3af; background: #f3f4f6; }
 
-  .bar-wrap { flex: 1; max-width: 120px; }
-  .bar-bg { height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-  .bar-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: #d1d5db; }
+/* ── Fairness panel ── */
+.fair-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
+  padding: .9rem 1rem; display: flex; align-items: center;
+  justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: .5rem;
+}
+.fair-num   { font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 500; letter-spacing: -.04em; transition: color .3s; line-height: 1; }
+.fair-label { font-size: .7rem; color: #9ca3af; margin-bottom: 3px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; font-weight: 500; padding: .3rem .7rem; border-radius: 20px; transition: all .3s; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
-  /* Fairness panel */
-  .fairness-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
+/* ── Airbnb row ── */
+.airbnb-row { background: #f9fafb; border-radius: 8px; padding: .55rem .9rem; display: flex; justify-content: space-between; align-items: center; font-size: .78rem; color: #6b7280; flex-wrap: wrap; gap: .25rem; }
 
-  .fairness-ecart {
-    font-family: 'DM Mono', monospace;
-    font-size: 2rem;
-    font-weight: 500;
-    letter-spacing: -0.04em;
-    transition: color 0.3s;
-    line-height: 1;
-  }
-
-  .fairness-ecart-label {
-    font-size: 0.72rem;
-    color: #9ca3af;
-    margin-bottom: 4px;
-    font-weight: 400;
-  }
-
-  .status-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    padding: 0.35rem 0.75rem;
-    border-radius: 20px;
-    transition: all 0.3s;
-  }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
-  .annecy-row {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    color: #9ca3af;
-  }
-
-  .annecy-item { display: flex; align-items: center; gap: 6px; }
-  .annecy-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #e5e7eb; }
-
-  .airbnb-row {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.78rem;
-    color: #6b7280;
-  }
-
-  .airbnb-row .mono { font-size: 0.75rem; color: #374151; }
-
-  .warning-box {
-    background: #fffbeb;
-    border: 1px solid #fcd34d;
-    border-radius: 8px;
-    padding: 0.55rem 1rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: #92400e;
-    display: none;
-  }
-  .warning-box.is-visible { display: block; }
-
-  .section-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #9ca3af;
-    margin-bottom: 0.75rem;
-  }
-
-  .pilot-delta-wrap { text-align: right; min-width: 64px; }
-  .pilot-delta { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; line-height: 1; }
-  .pilot-delta-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #9ca3af; margin-top: 3px; }
-  .delta-pos { color: #dc2626; }
-  .delta-neg { color: #059669; }
-  .delta-zero { color: #9ca3af; }
-
-  .split-panel {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    margin-top: 10px;
-  }
-  .split-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .split-panel-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #6b7280;
-  }
-  .split-share {
-    font-family: 'DM Mono', monospace;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #111827;
-  }
-  .split-rows { display: flex; flex-direction: column; gap: 6px; }
-  .split-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    background: #fff;
-    border-radius: 8px;
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb;
-  }
-  .split-pilot { font-size: 0.85rem; font-weight: 500; min-width: 60px; }
-  .split-paid { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #6b7280; }
-  .split-arrow { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #9ca3af; flex: 1; text-align: center; }
-  .split-result { font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 500; text-align: right; }
-  .split-note { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #9ca3af; text-align: right; }
-
-  .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.25rem 0; }
-
-  /* Toggle */
-  .toggle-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    user-select: none;
-    margin-left: auto;
-  }
-  .toggle-label input[type="checkbox"] { display: none; }
-  .toggle-track {
-    width: 36px; height: 20px;
-    background: #e5e7eb;
-    border-radius: 20px;
-    position: relative;
-    transition: background 0.2s;
-    flex-shrink: 0;
-  }
-  .toggle-thumb {
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 14px; height: 14px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  .toggle-label input:checked ~ .toggle-track { background: #111827; }
-  .toggle-label input:checked ~ .toggle-track .toggle-thumb { transform: translateX(16px); }
-  .toggle-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: #6b7280;
-    white-space: nowrap;
-  }
-  .toggle-label input:checked ~ .toggle-text { color: #111827; }
+/* ── Split panel ── */
+.split-panel { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: var(--r); padding: .9rem 1rem; margin-top: .5rem; }
+.split-hdr   { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5rem; margin-bottom: .65rem; }
+.split-title { font-family: 'DM Mono', monospace; font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; }
+.split-share { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #111827; }
+.split-rows  { display: flex; flex-direction: column; gap: 6px; }
+.split-row   { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: .55rem .85rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.split-name  { font-size: .85rem; font-weight: 600; min-width: 55px; }
+.split-paid  { font-family: 'DM Mono', monospace; font-size: .72rem; color: #6b7280; flex: 1; }
+.split-diff  { font-family: 'DM Mono', monospace; font-size: .78rem; font-weight: 500; text-align: right; }
+.split-note  { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; text-align: right; white-space: nowrap; }
 </style>
 </head>
 <body>
-
-<div style="max-width:860px;margin:0 auto;">
+<div style="max-width:820px;margin:0 auto;">
 
   <!-- Header -->
-  <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-5" style="border-bottom:2px solid #111827;padding-bottom:1rem;gap:1rem;flex-wrap:wrap;">
-    <div>
-      <p class="page-sub mb-1">26 – 27 mai 2026 · 3 pilotes</p>
-      <h1 class="page-title">Répartition des legs</h1>
-    </div>
-    <p class="page-sub" style="text-align:right;">5 legs + vol local · 1 500 €</p>
+  <div class="hdr">
+    <p class="hdr-sub">26–27 mai 2026 · 3 pilotes</p>
+    <h1>Répartition des legs</h1>
   </div>
 
   <!-- Constraint -->
-  <div class="constraint-bar mb-4">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  <div class="cbar">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)
   </div>
 
-  <!-- Legs grid -->
-  <div class="columns is-multiline mb-2">
-
-    <!-- Day 1 -->
-    <div class="column is-12">
-      <p class="section-label">Mardi 26 mai 2026</p>
-      <div class="columns">
-        <div class="column">
-          <div class="leg-card" id="card-leg1">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Leg 1</span>
-              <span class="leg-cost">360 €</span>
-            </div>
-            <div class="leg-route">Beauvais → Beaune</div>
-            <div class="leg-icao">LFOB → LFGF · 2h40</div>
-            <select class="pilot-select" id="sel-leg1" onchange="update()">
-              <option value="">— Choisir —</option>
-              <option value="Hugo">Hugo</option>
-              <option value="Yanis">Yanis</option>
-              <option value="Cédric">Cédric</option>
-            </select>
-          </div>
-        </div>
-        <div class="column">
-          <div class="leg-card" id="card-leg2">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Leg 2</span>
-              <span class="leg-cost">270 €</span>
-            </div>
-            <div class="leg-route">Beaune → Annecy</div>
-            <div class="leg-icao">LFGF → LFLP · 2h00</div>
-            <select class="pilot-select" id="sel-leg2" onchange="update()">
-              <option value="">— Choisir —</option>
-              <option value="Hugo">Hugo</option>
-              <option value="Yanis">Yanis</option>
-              <option value="Cédric">Cédric</option>
-            </select>
-          </div>
-        </div>
-        <div class="column">
-          <div class="leg-card" id="card-vol">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Vol local <span style="font-size:0.6rem;background:#f3f4f6;color:#6b7280;padding:1px 6px;border-radius:4px;">Annecy</span></span>
-              <span class="leg-cost">160 €</span>
-            </div>
-            <div class="leg-route">Annecy → Annecy</div>
-            <div class="leg-icao">LFLP → LFLP · 1h10</div>
-            <select class="pilot-select" id="sel-vol" onchange="update()">
-              <option value="">— Choisir —</option>
-              <option value="Hugo">Hugo</option>
-              <option value="Yanis">Yanis</option>
-              <option value="Cédric">Cédric</option>
-            </select>
-          </div>
-        </div>
-      </div>
+  <!-- Day 1 -->
+  <p class="day-lbl">Mardi 26 mai 2026</p>
+  <div class="legs-day">
+    <div class="leg-card" id="card-leg1">
+      <div class="leg-top"><span class="leg-id">Leg 1</span><span class="leg-cost">360 €</span></div>
+      <div class="leg-route">Beauvais → Beaune</div>
+      <div class="leg-icao">LFOB → LFGF · 2h40</div>
+      <select class="psel" id="sel-leg1" onchange="update()">
+        <option value="">— Choisir —</option>
+        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
+      </select>
     </div>
-
-    <!-- Day 2 -->
-    <div class="column is-12">
-      <p class="section-label">Mercredi 27 mai 2026</p>
-      <div class="columns">
-        <div class="column">
-          <div class="leg-card" id="card-leg3">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Leg 3</span>
-              <span class="leg-cost">320 €</span>
-            </div>
-            <div class="leg-route">Annecy → Saint-Dié</div>
-            <div class="leg-icao">LFLP → LFGY · 2h20</div>
-            <select class="pilot-select" id="sel-leg3" onchange="update()">
-              <option value="">— Choisir —</option>
-              <option value="Hugo">Hugo</option>
-              <option value="Yanis">Yanis</option>
-              <option value="Cédric">Cédric</option>
-            </select>
-          </div>
-        </div>
-        <div class="column">
-          <div class="leg-card is-locked">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Leg 4 <span class="locked-tag">imposé</span></span>
-              <span class="leg-cost">170 €</span>
-            </div>
-            <div class="leg-route">Saint-Dié → Verdun</div>
-            <div class="leg-icao">LFGY → LFGW · 1h25</div>
-            <select class="pilot-select is-cedric" disabled>
-              <option selected>Cédric</option>
-            </select>
-          </div>
-        </div>
-        <div class="column">
-          <div class="leg-card" id="card-leg5">
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
-              <span class="leg-id">Leg 5</span>
-              <span class="leg-cost">215 €</span>
-            </div>
-            <div class="leg-route">Verdun → Beauvais</div>
-            <div class="leg-icao">LFGW → LFOB · 1h25</div>
-            <select class="pilot-select" id="sel-leg5" onchange="update()">
-              <option value="">— Choisir —</option>
-              <option value="Hugo">Hugo</option>
-              <option value="Yanis">Yanis</option>
-              <option value="Cédric">Cédric</option>
-            </select>
-          </div>
-        </div>
-      </div>
+    <div class="leg-card" id="card-leg2">
+      <div class="leg-top"><span class="leg-id">Leg 2</span><span class="leg-cost">270 €</span></div>
+      <div class="leg-route">Beaune → Annecy</div>
+      <div class="leg-icao">LFGF → LFLP · 2h00</div>
+      <select class="psel" id="sel-leg2" onchange="update()">
+        <option value="">— Choisir —</option>
+        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
+      </select>
     </div>
+    <div class="leg-card" id="card-vol">
+      <div class="leg-top">
+        <span class="leg-id">Vol local <span style="font-size:.58rem;background:#f3f4f6;color:#6b7280;padding:1px 5px;border-radius:3px;">Annecy</span></span>
+        <span class="leg-cost">160 €</span>
+      </div>
+      <div class="leg-route">Annecy → Annecy</div>
+      <div class="leg-icao">LFLP → LFLP · 1h10</div>
+      <select class="psel" id="sel-vol" onchange="update()">
+        <option value="">— Choisir —</option>
+        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
+      </select>
+    </div>
+  </div>
 
+  <!-- Day 2 -->
+  <p class="day-lbl">Mercredi 27 mai 2026</p>
+  <div class="legs-day">
+    <div class="leg-card" id="card-leg3">
+      <div class="leg-top"><span class="leg-id">Leg 3</span><span class="leg-cost">320 €</span></div>
+      <div class="leg-route">Annecy → Saint-Dié</div>
+      <div class="leg-icao">LFLP → LFGY · 2h20</div>
+      <select class="psel" id="sel-leg3" onchange="update()">
+        <option value="">— Choisir —</option>
+        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
+      </select>
+    </div>
+    <div class="leg-card locked" id="card-leg4">
+      <div class="leg-top">
+        <span class="leg-id">Leg 4 <span class="locked-tag">imposé</span></span>
+        <span class="leg-cost">170 €</span>
+      </div>
+      <div class="leg-route">Saint-Dié → Verdun</div>
+      <div class="leg-icao">LFGY → LFGW · 1h25</div>
+      <select class="psel is-cedric" disabled><option>Cédric</option></select>
+    </div>
+    <div class="leg-card" id="card-leg5">
+      <div class="leg-top"><span class="leg-id">Leg 5</span><span class="leg-cost">215 €</span></div>
+      <div class="leg-route">Verdun → Beauvais</div>
+      <div class="leg-icao">LFGW → LFOB · 1h25</div>
+      <select class="psel" id="sel-leg5" onchange="update()">
+        <option value="">— Choisir —</option>
+        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
+      </select>
+    </div>
   </div>
 
   <!-- Actions -->
-  <div class="is-flex is-align-items-center" style="gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;">
-    <button class="btn-main" onclick="applyBest()">✦ Proposition la plus équitable</button>
-    <button class="btn-ghost" onclick="resetAll()">Tout effacer</button>
-    <label class="toggle-label" id="toggle-wrap">
-      <input type="checkbox" id="toggle-consecutive" checked onchange="update()">
+  <div class="actions">
+    <button class="btn-main" onclick="applyBest()">✦ Proposition équitable</button>
+    <button class="btn-ghost" onclick="resetAll()">Effacer</button>
+    <label class="toggle-lbl">
+      <input type="checkbox" id="toggle-consec" checked onchange="update()">
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      <span class="toggle-text">Pas de legs consécutifs</span>
+      <span class="toggle-txt">Pas de legs consécutifs</span>
     </label>
   </div>
 
   <!-- Warnings -->
-  <div class="warning-box mb-3" id="warning-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
-  <div class="warning-box mb-3" id="warning-consecutive">⚠ Legs consécutifs par le même pilote.</div>
-  <div class="warning-box mb-3" id="warning-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
+  <div class="warn" id="w-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
+  <div class="warn" id="w-consec"></div>
+  <div class="warn" id="w-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
 
-  <!-- Annecy check -->
-  <div class="annecy-row mb-4">
+  <!-- Annecy dots -->
+  <div class="annecy-row">
     <div class="annecy-item"><div class="annecy-dot" id="dot-hugo"></div><span id="annecy-hugo">Hugo · —</span></div>
     <div class="annecy-item"><div class="annecy-dot" id="dot-yanis"></div><span id="annecy-yanis">Yanis · —</span></div>
     <div class="annecy-item"><div class="annecy-dot" id="dot-cedric"></div><span id="annecy-cedric">Cédric · —</span></div>
@@ -544,98 +282,87 @@
 
   <hr class="divider">
 
-  <!-- Pilot summaries -->
-  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+  <!-- Pilot cards -->
+  <div class="pilot-cards">
 
-    <div class="pilot-card">
-      <div class="pilot-strip" style="background:var(--hugo)"></div>
-      <div class="pilot-card-name" style="color:var(--hugo)">Hugo</div>
-      <div class="pilot-card-legs" id="hugo-legs">—</div>
-      <div class="bar-wrap" id="bar-hugo-wrap" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bar-hugo" style="background:var(--hugo)"></div></div>
-        <div class="bar-label" id="bar-hugo-label"></div>
+    <div class="pilot-card" id="pc-hugo">
+      <div class="p-strip" id="ps-hugo" style="background:var(--hugo)"></div>
+      <div class="p-name" style="color:var(--hugo)">Hugo</div>
+      <div class="p-legs" id="pl-hugo">—</div>
+      <div class="p-right">
+        <div class="p-total" id="pt-hugo">—</div>
+        <div class="p-airbnb" id="pa-hugo"></div>
       </div>
-      <div class="pilot-time-wrap">
-        <div class="pilot-time-num" id="hugo-time">—</div>
-        <div class="pilot-time-label">vol</div>
+      <div class="p-bar-row" id="pbar-hugo" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bf-hugo" style="background:var(--hugo)"></div></div>
+        <span class="bar-lbl" id="bl-hugo"></span>
       </div>
-      <div class="pilot-card-total">
-        <div class="pilot-total-num" id="hugo-total">—</div>
-        <div class="pilot-total-airbnb" id="hugo-airbnb"></div>
-      </div>
-      <div class="pilot-delta-wrap" id="hugo-delta-wrap" style="display:none">
-        <div class="pilot-delta" id="hugo-delta"></div>
-        <div class="pilot-delta-label">vs partage égal</div>
+      <div class="p-meta-row" id="pm-hugo" style="display:none">
+        <span class="p-time" id="ptime-hugo"></span>
+        <span class="p-delta" id="pdelta-hugo"></span>
       </div>
     </div>
 
-    <div class="pilot-card">
-      <div class="pilot-strip" style="background:var(--yanis)"></div>
-      <div class="pilot-card-name" style="color:var(--yanis)">Yanis</div>
-      <div class="pilot-card-legs" id="yanis-legs">—</div>
-      <div class="bar-wrap" id="bar-yanis-wrap" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bar-yanis" style="background:var(--yanis)"></div></div>
-        <div class="bar-label" id="bar-yanis-label"></div>
+    <div class="pilot-card" id="pc-yanis">
+      <div class="p-strip" id="ps-yanis" style="background:var(--yanis)"></div>
+      <div class="p-name" style="color:var(--yanis)">Yanis</div>
+      <div class="p-legs" id="pl-yanis">—</div>
+      <div class="p-right">
+        <div class="p-total" id="pt-yanis">—</div>
+        <div class="p-airbnb" id="pa-yanis"></div>
       </div>
-      <div class="pilot-time-wrap">
-        <div class="pilot-time-num" id="yanis-time">—</div>
-        <div class="pilot-time-label">vol</div>
+      <div class="p-bar-row" id="pbar-yanis" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bf-yanis" style="background:var(--yanis)"></div></div>
+        <span class="bar-lbl" id="bl-yanis"></span>
       </div>
-      <div class="pilot-card-total">
-        <div class="pilot-total-num" id="yanis-total">—</div>
-        <div class="pilot-total-airbnb" id="yanis-airbnb"></div>
-      </div>
-      <div class="pilot-delta-wrap" id="yanis-delta-wrap" style="display:none">
-        <div class="pilot-delta" id="yanis-delta"></div>
-        <div class="pilot-delta-label">vs partage égal</div>
+      <div class="p-meta-row" id="pm-yanis" style="display:none">
+        <span class="p-time" id="ptime-yanis"></span>
+        <span class="p-delta" id="pdelta-yanis"></span>
       </div>
     </div>
 
-    <div class="pilot-card">
-      <div class="pilot-strip" style="background:var(--cedric)"></div>
-      <div class="pilot-card-name" style="color:var(--cedric)">Cédric</div>
-      <div class="pilot-card-legs" id="cedric-legs">—</div>
-      <div class="bar-wrap" id="bar-cedric-wrap" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bar-cedric" style="background:var(--cedric)"></div></div>
-        <div class="bar-label" id="bar-cedric-label"></div>
+    <div class="pilot-card" id="pc-cedric">
+      <div class="p-strip" id="ps-cedric" style="background:var(--cedric)"></div>
+      <div class="p-name" style="color:var(--cedric)">Cédric</div>
+      <div class="p-legs" id="pl-cedric">—</div>
+      <div class="p-right">
+        <div class="p-total" id="pt-cedric">—</div>
+        <div class="p-airbnb" id="pa-cedric"></div>
       </div>
-      <div class="pilot-time-wrap">
-        <div class="pilot-time-num" id="cedric-time">—</div>
-        <div class="pilot-time-label">vol</div>
+      <div class="p-bar-row" id="pbar-cedric" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bf-cedric" style="background:var(--cedric)"></div></div>
+        <span class="bar-lbl" id="bl-cedric"></span>
       </div>
-      <div class="pilot-card-total">
-        <div class="pilot-total-num" id="cedric-total">—</div>
-        <div class="pilot-total-airbnb" id="cedric-airbnb"></div>
-      </div>
-      <div class="pilot-delta-wrap" id="cedric-delta-wrap" style="display:none">
-        <div class="pilot-delta" id="cedric-delta"></div>
-        <div class="pilot-delta-label">vs partage égal</div>
+      <div class="p-meta-row" id="pm-cedric" style="display:none">
+        <span class="p-time" id="ptime-cedric"></span>
+        <span class="p-delta" id="pdelta-cedric"></span>
       </div>
     </div>
 
   </div>
 
   <!-- Fairness -->
-  <div class="fairness-card mb-3">
+  <div class="fair-card">
     <div>
-      <div class="fairness-ecart-label">Écart max entre pilotes</div>
-      <div class="fairness-ecart" id="ecart-value">—</div>
+      <div class="fair-label">Écart max entre pilotes</div>
+      <div class="fair-num" id="ecart">—</div>
     </div>
-    <div class="status-chip" id="status-chip" style="background:#f3f4f6;color:#9ca3af;">
-      <div class="status-dot" id="status-dot" style="background:#d1d5db"></div>
-      <span id="status-text">En attente d'attribution</span>
+    <div class="chip" id="chip" style="background:#f3f4f6;color:#9ca3af;">
+      <div class="chip-dot" id="chip-dot" style="background:#d1d5db"></div>
+      <span id="chip-txt">En attente</span>
     </div>
   </div>
 
+  <!-- Airbnb -->
   <div class="airbnb-row">
     <span>Airbnb partagé — 186 € total</span>
-    <span class="mono">+ 62 € / personne</span>
+    <span class="mono" style="font-size:.73rem;color:#374151;">+ 62 € / personne</span>
   </div>
 
-  <!-- Split equally panel -->
+  <!-- Split panel -->
   <div class="split-panel" id="split-panel" style="display:none">
-    <div class="split-panel-header">
-      <span class="split-panel-title">Si on divise le total à 3 parts égales</span>
+    <div class="split-hdr">
+      <span class="split-title">Si on divise le total à 3 parts égales</span>
       <span class="split-share" id="split-share">—</span>
     </div>
     <div class="split-rows" id="split-rows"></div>
@@ -644,82 +371,70 @@
 </div>
 
 <script>
-// ── Data ──────────────────────────────────────────────────────────────────
 const LEGS = {
-  leg1: { label:'Leg 1',     route:'Beauvais→Beaune',  cost:360, annecy:false, min:160 },
-  leg2: { label:'Leg 2',     route:'Beaune→Annecy',    cost:270, annecy:true,  min:120 },
-  vol:  { label:'Vol local', route:'Annecy→Annecy',    cost:160, annecy:true,  min:70  },
-  leg3: { label:'Leg 3',     route:'Annecy→S.Dié',     cost:320, annecy:true,  min:140 },
-  leg4: { label:'Leg 4',     route:'S.Dié→Verdun',     cost:170, annecy:false, min:85  },
-  leg5: { label:'Leg 5',     route:'Verdun→Beauvais',  cost:215, annecy:false, min:85  },
+  leg1: { label:'Leg 1',     cost:360, min:160, annecy:false },
+  leg2: { label:'Leg 2',     cost:270, min:120, annecy:true  },
+  vol:  { label:'Vol local', cost:160, min:70,  annecy:true  },
+  leg3: { label:'Leg 3',     cost:320, min:140, annecy:true  },
+  leg4: { label:'Leg 4',     cost:170, min:85,  annecy:false },
+  leg5: { label:'Leg 5',     cost:215, min:85,  annecy:false },
 };
-// Ordered sequence — consecutive pairs that cannot share the same pilot
-const SEQUENCE = ['leg1','leg2','vol','leg3','leg4','leg5'];
-const AIRBNB   = 62;
-const PILOTS   = ['Hugo','Yanis','Cédric'];
-
-// ── DOM helpers ──────────────────────────────────────────────────────────
-const el  = id => document.getElementById(id);
+const SEQ    = ['leg1','leg2','vol','leg3','leg4','leg5'];
+const PILOTS = ['Hugo','Yanis','Cédric'];
+const AIRBNB = 62;
 const KEY = { 'Hugo':'hugo', 'Yanis':'yanis', 'Cédric':'cedric' };
 const COL = { 'Hugo':'var(--hugo)', 'Yanis':'var(--yanis)', 'Cédric':'var(--cedric)' };
-const CLS = { 'Hugo':'is-hugo',    'Yanis':'is-yanis',     'Cédric':'is-cedric' };
-function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
+const CLS = { 'Hugo':'is-hugo', 'Yanis':'is-yanis', 'Cédric':'is-cedric' };
+const $ = id => document.getElementById(id);
 
-// ── Read / write assignments ─────────────────────────────────────────────
+function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
+function consecOn() { return $('toggle-consec').checked; }
+
 function getA() {
   return {
-    leg1: el('sel-leg1').value,
-    leg2: el('sel-leg2').value,
-    vol:  el('sel-vol').value,
-    leg3: el('sel-leg3').value,
+    leg1: $('sel-leg1').value,
+    leg2: $('sel-leg2').value,
+    vol:  $('sel-vol').value,
+    leg3: $('sel-leg3').value,
     leg4: 'Cédric',
-    leg5: el('sel-leg5').value,
+    leg5: $('sel-leg5').value,
   };
 }
 
 function setA(a) {
-  el('sel-leg1').value = a.leg1 || '';
-  el('sel-leg2').value = a.leg2 || '';
-  el('sel-vol').value  = a.vol  || '';
-  el('sel-leg3').value = a.leg3 || '';
-  el('sel-leg5').value = a.leg5 || '';
+  $('sel-leg1').value = a.leg1||'';
+  $('sel-leg2').value = a.leg2||'';
+  $('sel-vol').value  = a.vol||'';
+  $('sel-leg3').value = a.leg3||'';
+  $('sel-leg5').value = a.leg5||'';
   update();
 }
 
-// ── Validation helpers ───────────────────────────────────────────────────
-function consecutiveActive() { return el('toggle-consecutive').checked; }
-
-function consecutiveViolations(a) {
-  if (!consecutiveActive()) return [];
-  const violations = [];
-  for (let i = 0; i < SEQUENCE.length - 1; i++) {
-    const k1 = SEQUENCE[i], k2 = SEQUENCE[i+1];
-    if (a[k1] && a[k2] && a[k1] === a[k2]) {
-      violations.push(LEGS[k1].label + ' & ' + LEGS[k2].label);
-    }
+function getViolations(a) {
+  if (!consecOn()) return [];
+  const v = [];
+  for (let i = 0; i < SEQ.length - 1; i++) {
+    const k1 = SEQ[i], k2 = SEQ[i+1];
+    if (a[k1] && a[k2] && a[k1] === a[k2])
+      v.push(LEGS[k1].label + ' & ' + LEGS[k2].label);
   }
-  return violations;
+  return v;
 }
 
-function isValidAssignment(a, enforceConsecutive) {
-  // Each pilot must have an Annecy leg
-  const annecyLegs = ['leg2','vol','leg3'];
-  const ap = new Set(annecyLegs.map(k => a[k]));
-  if (!PILOTS.every(p => ap.has(p))) return false;
-  // No consecutive same pilot (if rule active)
-  if (enforceConsecutive && consecutiveViolations(a).length > 0) return false;
+function isValid(a, enforceConsec) {
+  const ann = new Set(['leg2','vol','leg3'].map(k => a[k]));
+  if (!PILOTS.every(p => ann.has(p))) return false;
+  if (enforceConsec && getViolations(a).length > 0) return false;
   return true;
 }
 
-// ── Main update ──────────────────────────────────────────────────────────
 function update() {
   const a = getA();
+  const costs = {Hugo:0,Yanis:0,'Cédric':0};
+  const mins  = {Hugo:0,Yanis:0,'Cédric':0};
+  const legs  = {Hugo:[],Yanis:[],'Cédric':[]};
 
-  // Accumulate per-pilot stats
-  const costs = { Hugo:0, Yanis:0, 'Cédric':0 };
-  const mins  = { Hugo:0, Yanis:0, 'Cédric':0 };
-  const legs  = { Hugo:[], Yanis:[], 'Cédric':[] };
-  for (const [k, p] of Object.entries(a)) {
+  for (const [k,p] of Object.entries(a)) {
     if (p && LEGS[k]) {
       costs[p] += LEGS[k].cost;
       mins[p]  += LEGS[k].min;
@@ -729,154 +444,134 @@ function update() {
 
   // Color selects
   ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
-    const s = el('sel-' + k);
-    s.className = 'pilot-select' + (s.value ? ' ' + CLS[s.value] : '');
+    const s = $('sel-'+k);
+    s.className = 'psel' + (s.value ? ' '+CLS[s.value] : '');
   });
 
-  const violations = consecutiveViolations(a);
-
-  // Highlight consecutive offenders in red — only when toggle is ON
-  SEQUENCE.forEach((k) => {
-    if (k === 'leg4') return;
-    const card = el('card-' + k);
+  // Consecutive violations
+  const viols = getViolations(a);
+  ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
+    const card = $('card-'+k);
     if (!card) return;
-    const isOffender = consecutiveActive() && violations.some(v => v.includes(LEGS[k].label));
-    card.style.borderColor = isOffender ? '#dc2626' : '';
-    card.style.background  = isOffender ? '#fff5f5' : '';
+    const bad = consecOn() && viols.some(v => v.includes(LEGS[k].label));
+    card.classList.toggle('bad', bad);
   });
 
-  const allAssigned = Object.values(a).every(v => v);
-  el('warning-unassigned').classList.toggle('is-visible', !allAssigned);
-
-  // Consecutive warning — only shown when toggle is ON
-  const showConsec = consecutiveActive() && violations.length > 0;
-  el('warning-consecutive').classList.toggle('is-visible', showConsec);
-  if (showConsec) {
-    el('warning-consecutive').textContent = '⚠ Legs consécutifs par le même pilote : ' + violations.join(', ');
+  const wc = $('w-consec');
+  if (consecOn() && viols.length) {
+    wc.textContent = '⚠ Legs consécutifs par le même pilote : ' + viols.join(', ');
+    wc.classList.add('on');
+  } else {
+    wc.classList.remove('on');
   }
 
-  // Annecy check
-  const annecyLegs = ['leg2','vol','leg3'];
-  const annecyMap  = { Hugo:[], Yanis:[], 'Cédric':[] };
-  annecyLegs.forEach(k => { if (a[k]) annecyMap[a[k]].push(LEGS[k].label); });
-  const annecyOk = PILOTS.every(p => annecyMap[p].length > 0);
-  el('warning-annecy').classList.toggle('is-visible', allAssigned && !annecyOk);
+  const allOk = Object.values(a).every(v => v);
+  $('w-unassigned').classList.toggle('on', !allOk);
+
+  // Annecy
+  const annMap = {Hugo:[],Yanis:[],'Cédric':[]};
+  ['leg2','vol','leg3'].forEach(k => { if (a[k]) annMap[a[k]].push(LEGS[k].label); });
+  const annOk = PILOTS.every(p => annMap[p].length > 0);
+  $('w-annecy').classList.toggle('on', allOk && !annOk);
 
   PILOTS.forEach(p => {
     const k = KEY[p];
-    const has = annecyMap[p].length > 0;
-    el('dot-' + k).style.background = has ? COL[p] : '#e5e7eb';
-    el('annecy-' + k).textContent   = p + ' · ' + (has ? annecyMap[p].join(', ') : '—');
-    el('annecy-' + k).style.color   = has ? '#374151' : '#9ca3af';
+    const has = annMap[p].length > 0;
+    $('dot-'+k).style.background = has ? COL[p] : '#e5e7eb';
+    $('annecy-'+k).textContent = p+' · '+(has ? annMap[p].join(', ') : '—');
+    $('annecy-'+k).style.color = has ? '#374151' : '#9ca3af';
   });
 
-  // Pilot summary cards
+  // Pilot cards — partial update even when not all assigned
+  const maxC = allOk ? Math.max(...Object.values(costs)) : 0;
+
   PILOTS.forEach(p => {
     const k = KEY[p];
-    el(k + '-total').textContent  = costs[p] > 0 ? costs[p] + ' €' : '—';
-    el(k + '-legs').textContent   = legs[p].length ? legs[p].join('\n') : '—';
-    el(k + '-airbnb').textContent = allAssigned ? 'avec Airbnb : ' + (costs[p] + AIRBNB) + ' €' : '';
-    el(k + '-time').textContent   = mins[p] > 0 ? fmtMin(mins[p]) : '—';
-    const wrap = el('bar-' + k + '-wrap');
-    wrap.style.display = allAssigned ? 'block' : 'none';
-    if (allAssigned) {
-      const maxC = Math.max(...Object.values(costs));
-      const pct  = maxC > 0 ? Math.round((costs[p] / maxC) * 100) : 0;
-      el('bar-' + k).style.width           = pct + '%';
-      el('bar-' + k + '-label').textContent = pct + '% du max';
+    $('pt-'+k).textContent  = costs[p] > 0 ? costs[p]+' €' : '—';
+    $('pl-'+k).textContent  = legs[p].length ? legs[p].join('\n') : '—';
+    $('pa-'+k).textContent  = allOk ? 'avec Airbnb : '+(costs[p]+AIRBNB)+' €' : '';
+    const showBar = allOk;
+    $('pbar-'+k).style.display = showBar ? 'flex' : 'none';
+    if (showBar) {
+      const pct = maxC > 0 ? Math.round((costs[p]/maxC)*100) : 0;
+      $('bf-'+k).style.width = pct+'%';
+      $('bl-'+k).textContent = pct+'% du max';
     }
+    $('pm-'+k).style.display = 'none';
   });
 
-  // Fairness
-  if (!allAssigned) {
-    el('ecart-value').textContent = '—';
-    el('ecart-value').style.color = '#111827';
-    el('status-dot').style.background = '#d1d5db';
-    el('status-text').textContent = "En attente d'attribution";
-    el('status-chip').style.cssText = 'background:#f3f4f6;color:#9ca3af;';
+  // Fairness & split — only when all assigned
+  if (!allOk) {
+    $('ecart').textContent = '—'; $('ecart').style.color = '#111827';
+    $('chip-dot').style.background = '#d1d5db';
+    $('chip-txt').textContent = "En attente";
+    $('chip').style.cssText = 'background:#f3f4f6;color:#9ca3af;';
+    $('split-panel').style.display = 'none';
     return;
   }
 
   const vals  = Object.values(costs);
-  const maxC  = Math.max(...vals), minC = Math.min(...vals);
-  const ecart = maxC - minC;
-  el('ecart-value').textContent = ecart + ' €';
-  const isGood = ecart <= 50, isMid = ecart <= 150;
-  const col = isGood ? '#059669' : isMid ? '#d97706' : '#dc2626';
-  const bgc = isGood ? '#ecfdf5' : isMid ? '#fffbeb' : '#fef2f2';
-  el('ecart-value').style.color = col;
-  el('status-dot').style.background = col;
-  el('status-chip').style.cssText = `background:${bgc};color:${col};`;
-  el('status-text').textContent = isGood ? 'Très équitable ✓' : isMid ? 'Acceptable' : 'Écart important';
+  const ecart = Math.max(...vals) - Math.min(...vals);
+  $('ecart').textContent = ecart+' €';
+  const good = ecart<=50, mid = ecart<=150;
+  const col = good?'#059669':mid?'#d97706':'#dc2626';
+  const bgc = good?'#ecfdf5':mid?'#fffbeb':'#fef2f2';
+  $('ecart').style.color = col;
+  $('chip-dot').style.background = col;
+  $('chip').style.cssText = `background:${bgc};color:${col};`;
+  $('chip-txt').textContent = good?'Très équitable ✓':mid?'Acceptable':'Écart important';
 
-  // ── Partage à 3 égal ─────────────────────────────────────────────────
-  const totalVols = Object.values(costs).reduce((s, v) => s + v, 0);
-  const shareEach = Math.round(totalVols / 3);
-  el('split-share').textContent = shareEach + ' € / pers.';
-  el('split-panel').style.display = 'block';
+  // Split by 3
+  const total = Object.values(costs).reduce((s,v)=>s+v,0);
+  const share = Math.round(total/3);
+  $('split-share').textContent = share+' € / pers.';
+  $('split-panel').style.display = 'block';
 
-  const rows = PILOTS.map(p => {
-    const paid    = costs[p];
-    const diff    = paid - shareEach;
-    const absDiff = Math.abs(diff);
-    const cls     = diff > 0 ? 'delta-pos' : diff < 0 ? 'delta-neg' : 'delta-zero';
-    const note    = diff > 0
-      ? `reçoit ${absDiff} €`
-      : diff < 0
-      ? `doit ${absDiff} €`
-      : 'pile poil';
-    const sign    = diff > 0 ? '+' : diff < 0 ? '−' : '=';
+  $('split-rows').innerHTML = PILOTS.map(p => {
+    const k    = KEY[p];
+    const paid = costs[p];
+    const diff = paid - share;
+    const abs  = Math.abs(diff);
+    const dcls = diff>0?'delta-pos':diff<0?'delta-neg':'delta-zero';
+    const sign = diff>0?'+':diff<0?'−':'=';
+    const note = diff>0?`reçoit ${abs} €`:diff<0?`doit ${abs} €`:'pile poil';
 
-    const k = KEY[p];
-    el(k + '-delta-wrap').style.display = 'block';
-    el(k + '-delta').textContent = (diff > 0 ? '+' : diff < 0 ? '−' : '') + absDiff + ' €';
-    el(k + '-delta').className = 'pilot-delta ' + cls;
+    // update meta row in pilot card
+    $('pm-'+k).style.display = 'flex';
+    $('ptime-'+k).textContent = fmtMin(mins[p]);
+    $('pdelta-'+k).textContent = (diff>0?'+':diff<0?'−':'')+abs+' €';
+    $('pdelta-'+k).className = 'p-delta '+dcls;
 
     return `<div class="split-row">
-      <span class="split-pilot" style="color:${COL[p]}">${p}</span>
-      <span class="split-paid">a payé <strong>${paid} €</strong></span>
-      <span class="split-arrow">→</span>
-      <div style="text-align:right">
-        <div class="split-result ${cls}">${sign} ${absDiff} €</div>
-        <div class="split-note">${note}</div>
-      </div>
+      <span class="split-name" style="color:${COL[p]}">${p}</span>
+      <span class="split-paid">payé ${paid} €</span>
+      <span class="split-diff ${dcls}">${sign} ${abs} €</span>
+      <span class="split-note">${note}</span>
     </div>`;
   }).join('');
-  el('split-rows').innerHTML = rows;
 }
 
-// ── Brute-force best assignment ──────────────────────────────────────────
 function applyBest() {
   const free = ['leg1','leg2','vol','leg3','leg5'];
-  let bestEcart = Infinity, bestA = null;
-
+  let best = Infinity, bestA = null;
   function go(i, cur) {
     if (i === free.length) {
-      const full = { ...cur, leg4: 'Cédric' };
-      if (!isValidAssignment(full, consecutiveActive())) return;
-      const c = { Hugo:0, Yanis:0, 'Cédric':0 };
-      for (const [k, p] of Object.entries(full)) c[p] += LEGS[k].cost;
+      const full = {...cur, leg4:'Cédric'};
+      if (!isValid(full, consecOn())) return;
+      const c = {Hugo:0,Yanis:0,'Cédric':0};
+      for (const [k,p] of Object.entries(full)) c[p] += LEGS[k].cost;
       const e = Math.max(...Object.values(c)) - Math.min(...Object.values(c));
-      if (e < bestEcart) { bestEcart = e; bestA = full; }
+      if (e < best) { best = e; bestA = full; }
       return;
     }
-    for (const p of PILOTS) { cur[free[i]] = p; go(i + 1, cur); }
+    for (const p of PILOTS) { cur[free[i]] = p; go(i+1, cur); }
   }
-
   go(0, {});
   if (bestA) setA(bestA);
 }
 
-function applyOriginal() {
-  // Original was Hugo:L1+Vol, Yanis:L2+L5, Cédric:L3+L4
-  // But L3+L4 are consecutive → violates new rule → use best instead
-  applyBest();
-}
-
 function resetAll() {
-  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id => {
-    el(id).value = '';
-  });
+  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id => $(id).value = '');
   update();
 }
 
