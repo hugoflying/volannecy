@@ -321,12 +321,12 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
     <button class="btn-main" onclick="showProposals()">✦ Voir les meilleures combinaisons</button>
     <button class="btn-ghost" onclick="resetAll()">Effacer</button>
     <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-consec" checked onchange="update()">
+      <input type="checkbox" id="toggle-consec" onchange="update()">
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
       <span class="toggle-txt">Pas de legs consécutifs</span>
     </label>
     <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-daily" checked onchange="update()">
+      <input type="checkbox" id="toggle-daily" onchange="update()">
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
       <span class="toggle-txt">Vol chaque jour</span>
     </label>
@@ -344,7 +344,6 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   <!-- Warnings -->
   <div class="warn" id="w-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
   <div class="warn" id="w-consec"></div>
-  <div class="warn" id="w-daily"></div>
   <div class="warn" id="w-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
 
   <hr class="divider">
@@ -601,16 +600,6 @@ function update() {
   ['leg2','vol','leg3'].forEach(k => { if (a[k]) annMap[a[k]].push(LEGS[k].label); });
   const annOk = PILOTS.every(p => annMap[p].length > 0);
   $('w-annecy').classList.toggle('on', allOk && !annOk);
-
-  // Daily warning
-  const dailyViols = getDailyViolations(a);
-  const wd = $('w-daily');
-  if (dailyOn() && dailyViols.length) {
-    wd.textContent = '⚠ ' + dailyViols.join(', ');
-    wd.classList.add('on');
-  } else {
-    wd.classList.remove('on');
-  }
 
   // Pilot cards — partial update even when not all assigned
   const maxC = allOk ? Math.max(...Object.values(costs)) : 0;
