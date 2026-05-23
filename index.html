@@ -35,8 +35,21 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   background: var(--cedric-light); border: 1px solid var(--cedric-border);
   border-radius: var(--r); padding: .55rem .9rem;
   font-family: 'DM Mono', monospace; font-size: .72rem; color: #92400e;
-  display: flex; align-items: flex-start; gap: .5rem; margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: .5rem; margin-bottom: 1.25rem;
+  flex-wrap: wrap;
 }
+.cbar.unlocked {
+  background: #f9fafb; border-color: #e5e7eb; color: #9ca3af;
+}
+.cbar-btn {
+  margin-left: auto; padding: 2px 10px; border-radius: 6px; font-size: .65rem;
+  font-family: 'DM Mono', monospace; font-weight: 500; cursor: pointer;
+  border: 1px solid #d97706; background: transparent; color: #92400e;
+  transition: all .15s; white-space: nowrap;
+}
+.cbar-btn:hover { background: #d97706; color: #fff; }
+.cbar.unlocked .cbar-btn { border-color: #9ca3af; color: #6b7280; }
+.cbar.unlocked .cbar-btn:hover { background: #6b7280; color: #fff; }
 
 /* ── Day label ── */
 .day-lbl {
@@ -194,9 +207,10 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   </div>
 
   <!-- Constraint -->
-  <div class="cbar">
+  <div class="cbar" id="cbar">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)
+    <span id="cbar-txt">Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)</span>
+    <button class="cbar-btn" id="cbar-btn" onclick="toggleLock()">Enlever</button>
   </div>
 
   <!-- Day 1 -->
@@ -248,12 +262,16 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
     </div>
     <div class="leg-card locked" id="card-leg4">
       <div class="leg-top">
-        <span class="leg-id">Leg 4 <span class="locked-tag">imposé</span></span>
+        <span class="leg-id">Leg 4 <span class="locked-tag" id="leg4-tag">imposé</span></span>
         <span class="leg-cost">170 €</span>
       </div>
       <div class="leg-route">Saint-Dié → Verdun</div>
       <div class="leg-icao">LFGY → LFGW · 1h25</div>
-      <select class="psel is-cedric" disabled><option>Cédric</option></select>
+      <select class="psel is-cedric" id="sel-leg4" onchange="update()" disabled>
+        <option value="">— Choisir —</option>
+        <option selected>Cédric</option>
+        <option>Hugo</option><option>Yanis</option>
+      </select>
     </div>
     <div class="leg-card" id="card-leg5">
       <div class="leg-top"><span class="leg-id">Leg 5</span><span class="leg-cost">215 €</span></div>
@@ -418,13 +436,15 @@ function getDailyViolations(a) {
   return missing;
 }
 
+function lockOn() { return $('sel-leg4').disabled; }
+
 function getA() {
   return {
     leg1: $('sel-leg1').value,
     leg2: $('sel-leg2').value,
     vol:  $('sel-vol').value,
     leg3: $('sel-leg3').value,
-    leg4: 'Cédric',
+    leg4: lockOn() ? 'Cédric' : $('sel-leg4').value,
     leg5: $('sel-leg5').value,
   };
 }
@@ -434,7 +454,41 @@ function setA(a) {
   $('sel-leg2').value = a.leg2||'';
   $('sel-vol').value  = a.vol||'';
   $('sel-leg3').value = a.leg3||'';
+  if (!lockOn()) $('sel-leg4').value = a.leg4||'';
   $('sel-leg5').value = a.leg5||'';
+  update();
+}
+
+function toggleLock() {
+  const locked = lockOn();
+  const sel  = $('sel-leg4');
+  const card = $('card-leg4');
+  const tag  = $('leg4-tag');
+  const cbar = $('cbar');
+  const btn  = $('cbar-btn');
+  const txt  = $('cbar-txt');
+
+  if (locked) {
+    // Unlock
+    sel.disabled = false;
+    sel.value = 'Cédric';
+    sel.className = 'psel is-cedric';
+    card.classList.remove('locked');
+    tag.style.display = 'none';
+    cbar.classList.add('unlocked');
+    txt.textContent = 'Leg 4 libre — plus de contrainte';
+    btn.textContent = 'Rétablir';
+  } else {
+    // Lock back
+    sel.disabled = true;
+    sel.value = 'Cédric';
+    sel.className = 'psel is-cedric';
+    card.classList.add('locked');
+    tag.style.display = '';
+    cbar.classList.remove('unlocked');
+    txt.textContent = 'Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)';
+    btn.textContent = 'Enlever';
+  }
   update();
 }
 
@@ -476,10 +530,14 @@ function update() {
     const s = $('sel-'+k);
     s.className = 'psel' + (s.value ? ' '+CLS[s.value] : '');
   });
+  if (!lockOn()) {
+    const s4 = $('sel-leg4');
+    s4.className = 'psel' + (s4.value ? ' '+CLS[s4.value] : '');
+  }
 
   // Consecutive violations
   const viols = getViolations(a);
-  ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
+  ['leg1','leg2','vol','leg3','leg4','leg5'].forEach(k => {
     const card = $('card-'+k);
     if (!card) return;
     const bad = consecOn() && viols.some(v => v.includes(LEGS[k].label));
@@ -585,11 +643,13 @@ function update() {
 }
 
 function applyBest() {
-  const free = ['leg1','leg2','vol','leg3','leg5'];
+  const free = lockOn()
+    ? ['leg1','leg2','vol','leg3','leg5']
+    : ['leg1','leg2','vol','leg3','leg4','leg5'];
   let best = Infinity, bestA = null;
   function go(i, cur) {
     if (i === free.length) {
-      const full = {...cur, leg4:'Cédric'};
+      const full = lockOn() ? {...cur, leg4:'Cédric'} : {...cur};
       if (!isValid(full, consecOn(), dailyOn())) return;
       const c = {Hugo:0,Yanis:0,'Cédric':0};
       for (const [k,p] of Object.entries(full)) c[p] += LEGS[k].cost;
