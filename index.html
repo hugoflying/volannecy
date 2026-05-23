@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Répartition des legs — 3 pilotes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hugo: #2563eb;
+    --hugo-light: #eff6ff;
+    --hugo-border: #bfdbfe;
+    --yanis: #059669;
+    --yanis-light: #ecfdf5;
+    --yanis-border: #a7f3d0;
+    --cedric: #d97706;
+    --cedric-light: #fffbeb;
+    --cedric-border: #fcd34d;
+    --radius: 10px;
+  }
+
+  *, body { font-family: 'DM Sans', sans-serif; }
+  code, .mono { font-family: 'DM Mono', monospace; }
+
+  body { background: #f8f8f6; min-height: 100vh; padding: 2rem 1rem; }
+
+  .page-title { font-size: 2rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1.1; }
+  .page-sub { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .constraint-bar {
+    background: var(--cedric-light);
+    border: 1px solid var(--cedric-border);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .leg-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    transition: border-color 0.2s;
+    height: 100%;
+  }
+
+  .leg-card.is-locked {
+    background: var(--cedric-light);
+    border-color: var(--cedric-border);
+  }
+
+  .leg-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .leg-cost {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .leg-route { font-size: 0.95rem; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 0.1rem; }
+  .leg-icao { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #9ca3af; margin-bottom: 0.75rem; }
+
+  .locked-tag {
+    background: var(--cedric);
+    color: #fff;
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .pilot-select {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    transition: all 0.15s;
+  }
+
+  .pilot-select:focus { outline: none; border-color: #374151; }
+  .pilot-select:disabled { opacity: 0.65; cursor: not-allowed; }
+  .pilot-select.is-hugo { border-color: var(--hugo-border); background-color: var(--hugo-light); color: var(--hugo); }
+  .pilot-select.is-yanis { border-color: var(--yanis-border); background-color: var(--yanis-light); color: var(--yanis); }
+  .pilot-select.is-cedric { border-color: var(--cedric-border); background-color: var(--cedric-light); color: var(--cedric); }
+
+  /* Buttons */
+  .btn-main {
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-main:hover { background: #374151; }
+
+  .btn-ghost {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
+
+  /* Pilot cards */
+  .pilot-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.25s;
+  }
+
+  .pilot-strip {
+    width: 3px;
+    border-radius: 3px;
+    align-self: stretch;
+    flex-shrink: 0;
+  }
+
+  .pilot-card-name {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    min-width: 60px;
+  }
+
+  .pilot-card-legs {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: #9ca3af;
+    flex: 1;
+    line-height: 1.7;
+  }
+
+  .pilot-card-total {
+    text-align: right;
+  }
+
+  .pilot-total-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: #111827;
+    line-height: 1;
+  }
+
+  .pilot-total-airbnb {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: #9ca3af;
+    margin-top: 3px;
+  }
+
+  .bar-wrap { flex: 1; max-width: 120px; }
+  .bar-bg { height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+  .bar-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: #d1d5db; }
+
+  /* Fairness panel */
+  .fairness-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .fairness-ecart {
+    font-family: 'DM Mono', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    transition: color 0.3s;
+    line-height: 1;
+  }
+
+  .fairness-ecart-label {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  .annecy-row {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: #9ca3af;
+  }
+
+  .annecy-item { display: flex; align-items: center; gap: 6px; }
+  .annecy-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #e5e7eb; }
+
+  .airbnb-row {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+
+  .airbnb-row .mono { font-size: 0.75rem; color: #374151; }
+
+  .warning-box {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 0.55rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: #92400e;
+    display: none;
+  }
+  .warning-box.is-visible { display: block; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.25rem 0; }
+</style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto;">
+
+  <!-- Header -->
+  <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-5" style="border-bottom:2px solid #111827;padding-bottom:1rem;gap:1rem;flex-wrap:wrap;">
+    <div>
+      <p class="page-sub mb-1">26 – 27 mai 2026 · 3 pilotes</p>
+      <h1 class="page-title">Répartition des legs</h1>
+    </div>
+    <p class="page-sub" style="text-align:right;">5 legs + vol local · 1 500 €</p>
+  </div>
+
+  <!-- Constraint -->
+  <div class="constraint-bar mb-4">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)
+  </div>
+
+  <!-- Legs grid -->
+  <div class="columns is-multiline mb-2">
+
+    <!-- Day 1 -->
+    <div class="column is-12">
+      <p class="section-label">Mardi 26 mai 2026</p>
+      <div class="columns">
+        <div class="column">
+          <div class="leg-card" id="card-leg1">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Leg 1</span>
+              <span class="leg-cost">360 €</span>
+            </div>
+            <div class="leg-route">Beauvais → Beaune</div>
+            <div class="leg-icao">LFOB → LFGF · 2h40</div>
+            <select class="pilot-select" id="sel-leg1" onchange="update()">
+              <option value="">— Choisir —</option>
+              <option value="Hugo">Hugo</option>
+              <option value="Yanis">Yanis</option>
+              <option value="Cédric">Cédric</option>
+            </select>
+          </div>
+        </div>
+        <div class="column">
+          <div class="leg-card" id="card-leg2">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Leg 2</span>
+              <span class="leg-cost">270 €</span>
+            </div>
+            <div class="leg-route">Beaune → Annecy</div>
+            <div class="leg-icao">LFGF → LFLP · 2h00</div>
+            <select class="pilot-select" id="sel-leg2" onchange="update()">
+              <option value="">— Choisir —</option>
+              <option value="Hugo">Hugo</option>
+              <option value="Yanis">Yanis</option>
+              <option value="Cédric">Cédric</option>
+            </select>
+          </div>
+        </div>
+        <div class="column">
+          <div class="leg-card" id="card-vol">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Vol local <span style="font-size:0.6rem;background:#f3f4f6;color:#6b7280;padding:1px 6px;border-radius:4px;">Annecy</span></span>
+              <span class="leg-cost">160 €</span>
+            </div>
+            <div class="leg-route">Annecy → Annecy</div>
+            <div class="leg-icao">LFLP → LFLP · 1h10</div>
+            <select class="pilot-select" id="sel-vol" onchange="update()">
+              <option value="">— Choisir —</option>
+              <option value="Hugo">Hugo</option>
+              <option value="Yanis">Yanis</option>
+              <option value="Cédric">Cédric</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="column is-12">
+      <p class="section-label">Mercredi 27 mai 2026</p>
+      <div class="columns">
+        <div class="column">
+          <div class="leg-card" id="card-leg3">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Leg 3</span>
+              <span class="leg-cost">320 €</span>
+            </div>
+            <div class="leg-route">Annecy → Saint-Dié</div>
+            <div class="leg-icao">LFLP → LFGY · 2h20</div>
+            <select class="pilot-select" id="sel-leg3" onchange="update()">
+              <option value="">— Choisir —</option>
+              <option value="Hugo">Hugo</option>
+              <option value="Yanis">Yanis</option>
+              <option value="Cédric">Cédric</option>
+            </select>
+          </div>
+        </div>
+        <div class="column">
+          <div class="leg-card is-locked">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Leg 4 <span class="locked-tag">imposé</span></span>
+              <span class="leg-cost">170 €</span>
+            </div>
+            <div class="leg-route">Saint-Dié → Verdun</div>
+            <div class="leg-icao">LFGY → LFGW · 1h25</div>
+            <select class="pilot-select is-cedric" disabled>
+              <option selected>Cédric</option>
+            </select>
+          </div>
+        </div>
+        <div class="column">
+          <div class="leg-card" id="card-leg5">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+              <span class="leg-id">Leg 5</span>
+              <span class="leg-cost">215 €</span>
+            </div>
+            <div class="leg-route">Verdun → Beauvais</div>
+            <div class="leg-icao">LFGW → LFOB · 1h25</div>
+            <select class="pilot-select" id="sel-leg5" onchange="update()">
+              <option value="">— Choisir —</option>
+              <option value="Hugo">Hugo</option>
+              <option value="Yanis">Yanis</option>
+              <option value="Cédric">Cédric</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div class="is-flex" style="gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+    <button class="btn-main" onclick="applyBest()">✦ Proposition la plus équitable</button>
+    <button class="btn-ghost" onclick="applyOriginal()">Répartition initiale</button>
+    <button class="btn-ghost" onclick="resetAll()">Tout effacer</button>
+  </div>
+
+  <!-- Warnings -->
+  <div class="warning-box mb-3" id="warning-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
+  <div class="warning-box mb-3" id="warning-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
+
+  <!-- Annecy check -->
+  <div class="annecy-row mb-4">
+    <div class="annecy-item"><div class="annecy-dot" id="dot-hugo"></div><span id="annecy-hugo">Hugo · —</span></div>
+    <div class="annecy-item"><div class="annecy-dot" id="dot-yanis"></div><span id="annecy-yanis">Yanis · —</span></div>
+    <div class="annecy-item"><div class="annecy-dot" id="dot-cedric"></div><span id="annecy-cedric">Cédric · —</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pilot summaries -->
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;">
+
+    <div class="pilot-card">
+      <div class="pilot-strip" style="background:var(--hugo)"></div>
+      <div class="pilot-card-name" style="color:var(--hugo)">Hugo</div>
+      <div class="pilot-card-legs" id="hugo-legs">—</div>
+      <div class="bar-wrap" id="bar-hugo-wrap" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bar-hugo" style="background:var(--hugo)"></div></div>
+        <div class="bar-label" id="bar-hugo-label"></div>
+      </div>
+      <div class="pilot-card-total">
+        <div class="pilot-total-num" id="hugo-total">—</div>
+        <div class="pilot-total-airbnb" id="hugo-airbnb"></div>
+      </div>
+    </div>
+
+    <div class="pilot-card">
+      <div class="pilot-strip" style="background:var(--yanis)"></div>
+      <div class="pilot-card-name" style="color:var(--yanis)">Yanis</div>
+      <div class="pilot-card-legs" id="yanis-legs">—</div>
+      <div class="bar-wrap" id="bar-yanis-wrap" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bar-yanis" style="background:var(--yanis)"></div></div>
+        <div class="bar-label" id="bar-yanis-label"></div>
+      </div>
+      <div class="pilot-card-total">
+        <div class="pilot-total-num" id="yanis-total">—</div>
+        <div class="pilot-total-airbnb" id="yanis-airbnb"></div>
+      </div>
+    </div>
+
+    <div class="pilot-card">
+      <div class="pilot-strip" style="background:var(--cedric)"></div>
+      <div class="pilot-card-name" style="color:var(--cedric)">Cédric</div>
+      <div class="pilot-card-legs" id="cedric-legs">—</div>
+      <div class="bar-wrap" id="bar-cedric-wrap" style="display:none">
+        <div class="bar-bg"><div class="bar-fill" id="bar-cedric" style="background:var(--cedric)"></div></div>
+        <div class="bar-label" id="bar-cedric-label"></div>
+      </div>
+      <div class="pilot-card-total">
+        <div class="pilot-total-num" id="cedric-total">—</div>
+        <div class="pilot-total-airbnb" id="cedric-airbnb"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fairness -->
+  <div class="fairness-card mb-3">
+    <div>
+      <div class="fairness-ecart-label">Écart max entre pilotes</div>
+      <div class="fairness-ecart" id="ecart-value">—</div>
+    </div>
+    <div class="status-chip" id="status-chip" style="background:#f3f4f6;color:#9ca3af;">
+      <div class="status-dot" id="status-dot" style="background:#d1d5db"></div>
+      <span id="status-text">En attente d'attribution</span>
+    </div>
+  </div>
+
+  <div class="airbnb-row">
+    <span>Airbnb partagé — 186 € total</span>
+    <span class="mono">+ 62 € / personne</span>
+  </div>
+
+</div>
+
+<script>
+const LEGS = {
+  leg1: { label:'Leg 1', route:'Beauvais→Beaune', cost:360, annecy:false },
+  leg2: { label:'Leg 2', route:'Beaune→Annecy', cost:270, annecy:true },
+  vol:  { label:'Vol local', route:'Annecy→Annecy', cost:160, annecy:true },
+  leg3: { label:'Leg 3', route:'Annecy→S.Dié', cost:320, annecy:true },
+  leg4: { label:'Leg 4', route:'S.Dié→Verdun', cost:170, annecy:false },
+  leg5: { label:'Leg 5', route:'Verdun→Beauvais', cost:215, annecy:false },
+};
+const AIRBNB = 62;
+const PILOTS = ['Hugo','Yanis','Cédric'];
+
+function getA() {
+  return {
+    leg1: document.getElementById('sel-leg1').value,
+    leg2: document.getElementById('sel-leg2').value,
+    vol:  document.getElementById('sel-vol').value,
+    leg3: document.getElementById('sel-leg3').value,
+    leg4: 'Cédric',
+    leg5: document.getElementById('sel-leg5').value,
+  };
+}
+
+function setA(a) {
+  document.getElementById('sel-leg1').value = a.leg1||'';
+  document.getElementById('sel-leg2').value = a.leg2||'';
+  document.getElementById('sel-vol').value  = a.vol||'';
+  document.getElementById('sel-leg3').value = a.leg3||'';
+  document.getElementById('sel-leg5').value = a.leg5||'';
+  update();
+}
+
+function pilotKey(p) { return p.toLowerCase().replace('é','e'); }
+function pilotClass(p) { return p==='Hugo'?'is-hugo':p==='Yanis'?'is-yanis':'is-cedric'; }
+function pilotColor(p) { return p==='Hugo'?'var(--hugo)':p==='Yanis'?'var(--yanis)':'var(--cedric)'; }
+
+function update() {
+  const a = getA();
+  const costs = {Hugo:0,Yanis:0,'Cédric':0};
+  const legs  = {Hugo:[],Yanis:[],'Cédric':[]};
+
+  for (const [k,p] of Object.entries(a)) {
+    if (p && LEGS[k]) { costs[p]+=LEGS[k].cost; legs[p].push(LEGS[k].label+' ('+LEGS[k].cost+'€)'); }
+  }
+
+  // Style selects
+  ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
+    const s = document.getElementById('sel-'+k);
+    s.className = 'pilot-select' + (s.value ? ' '+pilotClass(s.value) : '');
+  });
+
+  const allAssigned = Object.values(a).every(v=>v);
+  document.getElementById('warning-unassigned').classList.toggle('is-visible', !allAssigned);
+
+  // Annecy check
+  const annecyLegs = ['leg2','vol','leg3'];
+  const annecyMap = {Hugo:[],Yanis:[],'Cédric':[]};
+  annecyLegs.forEach(k => { if (a[k]) annecyMap[a[k]].push(LEGS[k].label); });
+  const annecyOk = PILOTS.every(p => annecyMap[p].length > 0);
+  document.getElementById('warning-annecy').classList.toggle('is-visible', allAssigned && !annecyOk);
+
+  PILOTS.forEach(p => {
+    const k = pilotKey(p);
+    const dot = document.getElementById('dot-'+k);
+    const lbl = document.getElementById('annecy-'+k);
+    const has = annecyMap[p].length > 0;
+    dot.style.background = has ? pilotColor(p) : '#e5e7eb';
+    lbl.textContent = p+' · '+(has ? annecyMap[p].join(', ') : '—');
+    lbl.style.color = has ? '#374151' : '#9ca3af';
+  });
+
+  // Summaries
+  if (!allAssigned) {
+    PILOTS.forEach(p => {
+      const k = pilotKey(p);
+      document.getElementById(k+'-total').textContent = costs[p]>0?costs[p]+' €':'—';
+      document.getElementById(k+'-legs').textContent  = legs[p].length?legs[p].join('\n'):'—';
+      document.getElementById(k+'-airbnb').textContent = '';
+      document.getElementById('bar-'+k+'-wrap').style.display='none';
+    });
+    document.getElementById('ecart-value').textContent='—';
+    document.getElementById('ecart-value').style.color='#111827';
+    document.getElementById('status-dot').style.background='#d1d5db';
+    document.getElementById('status-text').textContent="En attente d'attribution";
+    document.getElementById('status-chip').style.cssText='background:#f3f4f6;color:#9ca3af;';
+    return;
+  }
+
+  const vals = Object.values(costs);
+  const maxC = Math.max(...vals), minC = Math.min(...vals);
+  const ecart = maxC - minC;
+
+  PILOTS.forEach(p => {
+    const k = pilotKey(p);
+    document.getElementById(k+'-total').textContent = costs[p]+' €';
+    document.getElementById(k+'-legs').textContent  = legs[p].join('\n')||'—';
+    document.getElementById(k+'-airbnb').textContent = 'avec Airbnb : '+(costs[p]+AIRBNB)+' €';
+    const wrap = document.getElementById('bar-'+k+'-wrap');
+    wrap.style.display='block';
+    const pct = maxC>0?Math.round((costs[p]/maxC)*100):0;
+    document.getElementById('bar-'+k).style.width=pct+'%';
+    document.getElementById('bar-'+k+'-label').textContent=pct+'% du max';
+  });
+
+  document.getElementById('ecart-value').textContent=ecart+' €';
+  const isGood=ecart<=50, isMid=ecart<=150;
+  const col = isGood?'#059669':isMid?'#d97706':'#dc2626';
+  const bgc = isGood?'#ecfdf5':isMid?'#fffbeb':'#fef2f2';
+  document.getElementById('ecart-value').style.color=col;
+  document.getElementById('status-dot').style.background=col;
+  document.getElementById('status-chip').style.cssText=`background:${bgc};color:${col};`;
+  document.getElementById('status-text').textContent=isGood?'Très équitable ✓':isMid?'Acceptable':'Écart important';
+}
+
+function applyBest() {
+  const free = ['leg1','leg2','vol','leg3','leg5'];
+  let bestEcart=Infinity, bestA=null;
+  function go(i,cur) {
+    if (i===free.length) {
+      const ann=['leg2','vol','leg3'];
+      const ap=new Set(ann.map(k=>cur[k]));
+      if (!PILOTS.every(p=>ap.has(p))) return;
+      const c={Hugo:0,Yanis:0,'Cédric':170};
+      for (const [k,p] of Object.entries(cur)) c[p]+=LEGS[k].cost;
+      const e=Math.max(...Object.values(c))-Math.min(...Object.values(c));
+      if (e<bestEcart){bestEcart=e;bestA={...cur,leg4:'Cédric'};}
+      return;
+    }
+    for (const p of PILOTS){cur[free[i]]=p;go(i+1,cur);}
+  }
+  go(0,{});
+  if (bestA) setA(bestA);
+}
+
+function applyOriginal() {
+  setA({leg1:'Hugo',leg2:'Yanis',vol:'Hugo',leg3:'Cédric',leg4:'Cédric',leg5:'Yanis'});
+}
+
+function resetAll() {
+  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  update();
+}
+
+applyBest();
+</script>
+</body>
+</html>
