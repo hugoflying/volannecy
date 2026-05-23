@@ -170,6 +170,44 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 .delta-neg  { color: #059669; background: #ecfdf5; }
 .delta-zero { color: #9ca3af; background: #f3f4f6; }
 
+/* ── Proposals panel ── */
+.proposals-panel {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
+  margin-bottom: 1rem; overflow: hidden;
+}
+.proposals-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .7rem 1rem; border-bottom: 1px solid #f3f4f6; background: #f9fafb;
+}
+.proposals-title { font-family: 'DM Mono', monospace; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: #374151; }
+.proposals-close { background: none; border: none; font-size: 1rem; color: #9ca3af; cursor: pointer; padding: 0 4px; line-height: 1; }
+.proposals-close:hover { color: #374151; }
+
+.proposal-row {
+  display: grid; grid-template-columns: 1.5rem 1fr auto;
+  gap: .4rem .75rem; align-items: start;
+  padding: .75rem 1rem; border-bottom: 1px solid #f9fafb;
+  cursor: pointer; transition: background .12s;
+}
+.proposal-row:last-child { border-bottom: none; }
+.proposal-row:hover { background: #f9fafb; }
+.proposal-row.is-active { background: #eff6ff; border-left: 3px solid var(--hugo); padding-left: calc(1rem - 3px); }
+
+.prop-rank { font-family: 'DM Mono', monospace; font-size: .7rem; color: #d1d5db; text-align: center; padding-top: 3px; }
+.prop-rank.gold   { color: #d97706; font-weight: 600; }
+.prop-rank.silver { color: #6b7280; font-weight: 600; }
+.prop-rank.bronze { color: #92400e; }
+
+.prop-pilots { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .3rem; }
+.prop-tag { font-size: .72rem; font-weight: 500; padding: 2px 8px; border-radius: 5px; }
+.prop-detail { font-family: 'DM Mono', monospace; font-size: .6rem; color: #9ca3af; line-height: 1.6; }
+
+.prop-right { text-align: right; }
+.prop-ecart { font-family: 'DM Mono', monospace; font-size: .85rem; font-weight: 500; }
+.prop-ecart-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; color: #9ca3af; }
+.prop-apply { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; margin-top: 3px; }
+.proposal-row:hover .prop-apply { color: var(--hugo); }
+
 /* ── Fairness panel ── */
 .fair-card {
   background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
@@ -286,7 +324,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
   <!-- Actions -->
   <div class="actions">
-    <button class="btn-main" onclick="applyBest()">✦ Proposition équitable</button>
+    <button class="btn-main" onclick="showProposals()">✦ Voir les meilleures combinaisons</button>
     <button class="btn-ghost" onclick="resetAll()">Effacer</button>
     <label class="toggle-lbl">
       <input type="checkbox" id="toggle-consec" checked onchange="update()">
@@ -298,6 +336,15 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
       <span class="toggle-track"><span class="toggle-thumb"></span></span>
       <span class="toggle-txt">Vol chaque jour</span>
     </label>
+  </div>
+
+  <!-- Proposals panel -->
+  <div class="proposals-panel" id="proposals-panel" style="display:none">
+    <div class="proposals-hdr">
+      <span class="proposals-title">Meilleures combinaisons</span>
+      <button class="proposals-close" onclick="$('proposals-panel').style.display='none'">✕</button>
+    </div>
+    <div id="proposals-list"></div>
   </div>
 
   <!-- Warnings -->
@@ -642,25 +689,88 @@ function update() {
   }).join('');
 }
 
-function applyBest() {
+let currentProposalIdx = null;
+
+function showProposals() {
   const free = lockOn()
     ? ['leg1','leg2','vol','leg3','leg5']
     : ['leg1','leg2','vol','leg3','leg4','leg5'];
-  let best = Infinity, bestA = null;
+
+  const results = [];
+  const seen = new Set();
+
   function go(i, cur) {
     if (i === free.length) {
       const full = lockOn() ? {...cur, leg4:'Cédric'} : {...cur};
       if (!isValid(full, consecOn(), dailyOn())) return;
       const c = {Hugo:0,Yanis:0,'Cédric':0};
       for (const [k,p] of Object.entries(full)) c[p] += LEGS[k].cost;
-      const e = Math.max(...Object.values(c)) - Math.min(...Object.values(c));
-      if (e < best) { best = e; bestA = full; }
+      const vals = Object.values(c);
+      const ecart = Math.max(...vals) - Math.min(...vals);
+      // Deduplicate by cost distribution (not assignment — different assignments same costs count once)
+      const sig = PILOTS.map(p => p+':'+c[p]).join('|');
+      if (!seen.has(sig)) {
+        seen.add(sig);
+        results.push({ a: {...full}, costs: {...c}, ecart });
+      }
       return;
     }
     for (const p of PILOTS) { cur[free[i]] = p; go(i+1, cur); }
   }
   go(0, {});
-  if (bestA) setA(bestA);
+
+  results.sort((a,b) => a.ecart - b.ecart);
+  const top = results.slice(0, 6);
+
+  if (!top.length) {
+    alert('Aucune combinaison valide avec ces contraintes.');
+    return;
+  }
+
+  const rankSymbol = ['①','②','③','④','⑤','⑥'];
+  const rankClass  = ['gold','silver','bronze','','',''];
+
+  $('proposals-list').innerHTML = top.map((r, i) => {
+    const isGood = r.ecart <= 50, isMid = r.ecart <= 150;
+    const col = isGood ? '#059669' : isMid ? '#d97706' : '#dc2626';
+    const details = PILOTS.map(p => {
+      const k = KEY[p];
+      const pLegs = Object.entries(r.a).filter(([,v])=>v===p).map(([k])=>LEGS[k].label).join(' · ');
+      return `<span class="prop-tag" style="background:${COL[p]}18;color:${COL[p]}">${p}</span>`;
+    }).join('');
+    const legDetails = PILOTS.map(p => {
+      const pLegs = Object.entries(r.a).filter(([,v])=>v===p).map(([lk])=>LEGS[lk].label+' ('+LEGS[lk].cost+'€)').join(' · ');
+      return `${p} : ${pLegs} → ${r.costs[p]}€`;
+    }).join('\n');
+    return `<div class="proposal-row" onclick="applyProposal(${i})" id="prop-row-${i}">
+      <div class="prop-rank ${rankClass[i]}">${rankSymbol[i]}</div>
+      <div>
+        <div class="prop-pilots">${details}</div>
+        <div class="prop-detail">${legDetails}</div>
+      </div>
+      <div class="prop-right">
+        <div class="prop-ecart" style="color:${col}">${r.ecart} €</div>
+        <div class="prop-ecart-lbl">d'écart</div>
+        <div class="prop-apply">Appliquer →</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Store for apply
+  window._proposals = top;
+  currentProposalIdx = null;
+  $('proposals-panel').style.display = 'block';
+}
+
+function applyProposal(i) {
+  const r = window._proposals[i];
+  if (!r) return;
+  // Highlight active
+  document.querySelectorAll('.proposal-row').forEach((el,j) => {
+    el.classList.toggle('is-active', j === i);
+  });
+  currentProposalIdx = i;
+  setA(r.a);
 }
 
 function resetAll() {
@@ -668,7 +778,8 @@ function resetAll() {
   update();
 }
 
-applyBest();
+update();
+showProposals();
 </script>
 </body>
 </html>
