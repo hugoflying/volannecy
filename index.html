@@ -296,6 +296,58 @@
     margin-bottom: 0.75rem;
   }
 
+  .pilot-delta-wrap { text-align: right; min-width: 64px; }
+  .pilot-delta { font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 500; line-height: 1; }
+  .pilot-delta-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #9ca3af; margin-top: 3px; }
+  .delta-pos { color: #dc2626; }
+  .delta-neg { color: #059669; }
+  .delta-zero { color: #9ca3af; }
+
+  .split-panel {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 10px;
+  }
+  .split-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .split-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+  }
+  .split-share {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #111827;
+  }
+  .split-rows { display: flex; flex-direction: column; gap: 6px; }
+  .split-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .split-pilot { font-size: 0.85rem; font-weight: 500; min-width: 60px; }
+  .split-paid { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #6b7280; }
+  .split-arrow { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #9ca3af; flex: 1; text-align: center; }
+  .split-result { font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 500; text-align: right; }
+  .split-note { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #9ca3af; text-align: right; }
+
   .divider { border: none; border-top: 1px solid #f3f4f6; margin: 1.25rem 0; }
 
   /* Toggle */
@@ -511,6 +563,10 @@
         <div class="pilot-total-num" id="hugo-total">—</div>
         <div class="pilot-total-airbnb" id="hugo-airbnb"></div>
       </div>
+      <div class="pilot-delta-wrap" id="hugo-delta-wrap" style="display:none">
+        <div class="pilot-delta" id="hugo-delta"></div>
+        <div class="pilot-delta-label">vs partage égal</div>
+      </div>
     </div>
 
     <div class="pilot-card">
@@ -529,6 +585,10 @@
         <div class="pilot-total-num" id="yanis-total">—</div>
         <div class="pilot-total-airbnb" id="yanis-airbnb"></div>
       </div>
+      <div class="pilot-delta-wrap" id="yanis-delta-wrap" style="display:none">
+        <div class="pilot-delta" id="yanis-delta"></div>
+        <div class="pilot-delta-label">vs partage égal</div>
+      </div>
     </div>
 
     <div class="pilot-card">
@@ -546,6 +606,10 @@
       <div class="pilot-card-total">
         <div class="pilot-total-num" id="cedric-total">—</div>
         <div class="pilot-total-airbnb" id="cedric-airbnb"></div>
+      </div>
+      <div class="pilot-delta-wrap" id="cedric-delta-wrap" style="display:none">
+        <div class="pilot-delta" id="cedric-delta"></div>
+        <div class="pilot-delta-label">vs partage égal</div>
       </div>
     </div>
 
@@ -566,6 +630,15 @@
   <div class="airbnb-row">
     <span>Airbnb partagé — 186 € total</span>
     <span class="mono">+ 62 € / personne</span>
+  </div>
+
+  <!-- Split equally panel -->
+  <div class="split-panel" id="split-panel" style="display:none">
+    <div class="split-panel-header">
+      <span class="split-panel-title">Si on divise le total à 3 parts égales</span>
+      <span class="split-share" id="split-share">—</span>
+    </div>
+    <div class="split-rows" id="split-rows"></div>
   </div>
 
 </div>
@@ -735,6 +808,41 @@ function update() {
   el('status-dot').style.background = col;
   el('status-chip').style.cssText = `background:${bgc};color:${col};`;
   el('status-text').textContent = isGood ? 'Très équitable ✓' : isMid ? 'Acceptable' : 'Écart important';
+
+  // ── Partage à 3 égal ─────────────────────────────────────────────────
+  const totalVols = Object.values(costs).reduce((s, v) => s + v, 0);
+  const shareEach = Math.round(totalVols / 3);
+  el('split-share').textContent = shareEach + ' € / pers.';
+  el('split-panel').style.display = 'block';
+
+  const rows = PILOTS.map(p => {
+    const paid    = costs[p];
+    const diff    = paid - shareEach;
+    const absDiff = Math.abs(diff);
+    const cls     = diff > 0 ? 'delta-pos' : diff < 0 ? 'delta-neg' : 'delta-zero';
+    const note    = diff > 0
+      ? `reçoit ${absDiff} €`
+      : diff < 0
+      ? `doit ${absDiff} €`
+      : 'pile poil';
+    const sign    = diff > 0 ? '+' : diff < 0 ? '−' : '=';
+
+    const k = KEY[p];
+    el(k + '-delta-wrap').style.display = 'block';
+    el(k + '-delta').textContent = (diff > 0 ? '+' : diff < 0 ? '−' : '') + absDiff + ' €';
+    el(k + '-delta').className = 'pilot-delta ' + cls;
+
+    return `<div class="split-row">
+      <span class="split-pilot" style="color:${COL[p]}">${p}</span>
+      <span class="split-paid">a payé <strong>${paid} €</strong></span>
+      <span class="split-arrow">→</span>
+      <div style="text-align:right">
+        <div class="split-result ${cls}">${sign} ${absDiff} €</div>
+        <div class="split-note">${note}</div>
+      </div>
+    </div>`;
+  }).join('');
+  el('split-rows').innerHTML = rows;
 }
 
 // ── Brute-force best assignment ──────────────────────────────────────────
