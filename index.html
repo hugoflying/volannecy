@@ -245,6 +245,31 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
     <button class="cbar-btn" id="cbar-btn" onclick="toggleLock()">Enlever</button>
   </div>
 
+  <!-- Actions + Proposals -->
+  <div class="actions">
+    <button class="btn-main" onclick="showProposals()">✦ Voir les meilleures combinaisons</button>
+    <button class="btn-ghost" onclick="resetAll()">Effacer</button>
+    <label class="toggle-lbl">
+      <input type="checkbox" id="toggle-consec" onchange="update()">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-txt">Pas de legs consécutifs</span>
+    </label>
+    <label class="toggle-lbl">
+      <input type="checkbox" id="toggle-daily" onchange="update()">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span class="toggle-txt">Vol chaque jour</span>
+    </label>
+  </div>
+
+  <!-- Proposals panel -->
+  <div class="proposals-panel" id="proposals-panel" style="display:none">
+    <div class="proposals-hdr">
+      <span class="proposals-title">Meilleures combinaisons</span>
+      <button class="proposals-close" onclick="$('proposals-panel').style.display='none'">✕</button>
+    </div>
+    <div id="proposals-list"></div>
+  </div>
+
   <!-- Day 1 -->
   <p class="day-lbl">Mardi 26 mai 2026</p>
   <div class="legs-day">
@@ -314,31 +339,6 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
         <option>Hugo</option><option>Yanis</option><option>Cédric</option>
       </select>
     </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="actions">
-    <button class="btn-main" onclick="showProposals()">✦ Voir les meilleures combinaisons</button>
-    <button class="btn-ghost" onclick="resetAll()">Effacer</button>
-    <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-consec" onchange="update()">
-      <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      <span class="toggle-txt">Pas de legs consécutifs</span>
-    </label>
-    <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-daily" onchange="update()">
-      <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      <span class="toggle-txt">Vol chaque jour</span>
-    </label>
-  </div>
-
-  <!-- Proposals panel -->
-  <div class="proposals-panel" id="proposals-panel" style="display:none">
-    <div class="proposals-hdr">
-      <span class="proposals-title">Meilleures combinaisons</span>
-      <button class="proposals-close" onclick="$('proposals-panel').style.display='none'">✕</button>
-    </div>
-    <div id="proposals-list"></div>
   </div>
 
   <!-- Warnings -->
