@@ -72,6 +72,9 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 .leg-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .2rem; }
 .leg-id  { font-family: 'DM Mono', monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; display: flex; align-items: center; gap: .35rem; }
 .leg-cost { font-family: 'DM Mono', monospace; font-size: .82rem; font-weight: 500; color: #111827; }
+.leg-cost-wrap { text-align: right; }
+.leg-cost-gross { font-family: 'DM Mono', monospace; font-size: .68rem; color: #d1d5db; text-decoration: line-through; line-height: 1; }
+.leg-cost-discount { font-family: 'DM Mono', monospace; font-size: .6rem; color: #059669; line-height: 1.3; }
 .leg-route { font-size: .9rem; font-weight: 500; letter-spacing: -.01em; }
 .leg-icao  { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af; margin-bottom: .6rem; }
 .locked-tag { background: var(--cedric); color: #fff; font-size: .55rem; padding: 1px 5px; border-radius: 3px; font-weight: 500; }
@@ -280,7 +283,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   <p class="day-lbl">Mardi 26 mai 2026</p>
   <div class="legs-day">
     <div class="leg-card" id="card-leg1">
-      <div class="leg-top"><span class="leg-id">Leg 1</span><span class="leg-cost">315 €</span></div>
+      <div class="leg-top"><span class="leg-id">Leg 1</span><div class="leg-cost-wrap"><div class="leg-cost-gross">347 €</div><div class="leg-cost">315 €</div><div class="leg-cost-discount">−32 € offerts</div></div></div>
       <div class="leg-route">Beauvais → Beaune</div>
       <div class="leg-icao">LFOB → LFGF · 2h40</div>
       <select class="psel" id="sel-leg1" onchange="update()">
@@ -289,7 +292,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
       </select>
     </div>
     <div class="leg-card" id="card-leg2">
-      <div class="leg-top"><span class="leg-id">Leg 2</span><span class="leg-cost">236 €</span></div>
+      <div class="leg-top"><span class="leg-id">Leg 2</span><div class="leg-cost-wrap"><div class="leg-cost-gross">260 €</div><div class="leg-cost">236 €</div><div class="leg-cost-discount">−24 € offerts</div></div></div>
       <div class="leg-route">Beaune → Annecy</div>
       <div class="leg-icao">LFGF → LFLP · 2h00</div>
       <select class="psel" id="sel-leg2" onchange="update()">
@@ -300,7 +303,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
     <div class="leg-card" id="card-vol">
       <div class="leg-top">
         <span class="leg-id">Vol local <span style="font-size:.58rem;background:#f3f4f6;color:#6b7280;padding:1px 5px;border-radius:3px;">Annecy</span></span>
-        <span class="leg-cost">138 €</span>
+        <div class="leg-cost-wrap"><div class="leg-cost-gross">152 €</div><div class="leg-cost">138 €</div><div class="leg-cost-discount">−14 € offerts</div></div>
       </div>
       <div class="leg-route">Annecy → Annecy</div>
       <div class="leg-icao">LFLP → LFLP · 1h10</div>
@@ -315,7 +318,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   <p class="day-lbl">Mercredi 27 mai 2026</p>
   <div class="legs-day">
     <div class="leg-card" id="card-leg3">
-      <div class="leg-top"><span class="leg-id">Leg 3</span><span class="leg-cost">276 €</span></div>
+      <div class="leg-top"><span class="leg-id">Leg 3</span><div class="leg-cost-wrap"><div class="leg-cost-gross">303 €</div><div class="leg-cost">276 €</div><div class="leg-cost-discount">−27 € offerts</div></div></div>
       <div class="leg-route">Annecy → Saint-Dié</div>
       <div class="leg-icao">LFLP → LFGY · 2h20</div>
       <select class="psel" id="sel-leg3" onchange="update()">
@@ -326,7 +329,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
     <div class="leg-card locked" id="card-leg4">
       <div class="leg-top">
         <span class="leg-id">Leg 4 <span class="locked-tag" id="leg4-tag">imposé</span></span>
-        <span class="leg-cost">167 €</span>
+        <div class="leg-cost-wrap"><div class="leg-cost-gross">184 €</div><div class="leg-cost">167 €</div><div class="leg-cost-discount">−17 € offerts</div></div>
       </div>
       <div class="leg-route">Saint-Dié → Verdun</div>
       <div class="leg-icao">LFGY → LFGW · 1h25</div>
@@ -337,7 +340,7 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
       </select>
     </div>
     <div class="leg-card" id="card-leg5">
-      <div class="leg-top"><span class="leg-id">Leg 5</span><span class="leg-cost">168 €</span></div>
+      <div class="leg-top"><span class="leg-id">Leg 5</span><div class="leg-cost-wrap"><div class="leg-cost-gross">184 €</div><div class="leg-cost">168 €</div><div class="leg-cost-discount">−16 € offerts</div></div></div>
       <div class="leg-route">Verdun → Beauvais</div>
       <div class="leg-icao">LFGW → LFOB · 1h25</div>
       <select class="psel" id="sel-leg5" onchange="update()">
