@@ -8,113 +8,94 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --hugo:        #2563eb;
-  --hugo-bg:     #eff6ff;
-  --yanis:       #059669;
-  --yanis-bg:    #ecfdf5;
-  --cedric:      #d97706;
-  --cedric-bg:   #fffbeb;
+  --hugo:        #2563eb; --hugo-bg:   #eff6ff;
+  --yanis:       #059669; --yanis-bg:  #ecfdf5;
+  --cedric:      #d97706; --cedric-bg: #fffbeb;
   --r: 10px;
 }
 *, body { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
 body    { background: #f4f3ef; padding: 1.25rem 1rem 3rem; }
-.wrap   { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+.wrap   { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
 
 /* Header */
-.hdr   { border-bottom: 2px solid #111827; padding-bottom: .75rem;
-         display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: .5rem; }
-h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
-.sub   { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af;
-         text-transform: uppercase; letter-spacing: .1em; }
-.mono  { font-family: 'DM Mono', monospace; }
+.hdr  { border-bottom: 2px solid #111827; padding-bottom: .75rem;
+        display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: .5rem; }
+h1    { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.sub  { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af;
+        text-transform: uppercase; letter-spacing: .1em; }
 
 /* Section */
 .sec-title { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase;
              letter-spacing: .12em; color: #9ca3af; margin-bottom: .6rem; }
 
-/* Leg cards */
+/* Leg grid */
 .legs-grid { display: grid; gap: .5rem; grid-template-columns: 1fr; }
 @media(min-width: 540px) { .legs-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .leg-card {
-  background: #fff;
-  border-radius: var(--r);
-  border: 1px solid #e5e7eb;
-  padding: .85rem .9rem;
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
+  background: #fff; border-radius: var(--r); border: 1px solid #e5e7eb;
+  padding: .85rem .9rem; display: flex; flex-direction: column; gap: .4rem;
 }
+.lc-top   { display: flex; justify-content: space-between; align-items: center; }
+.lc-id    { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; }
+.lc-pilot { font-size: .72rem; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+.lc-route { font-size: .95rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.lc-rows  { border-top: .5px solid #f3f4f6; padding-top: .5rem; display: flex; flex-direction: column; gap: 5px; margin-top: .1rem; }
+.lc-row   { display: flex; align-items: center; gap: 5px; }
+.lc-lbl   { font-size: .72rem; color: #9ca3af; width: 36px; flex-shrink: 0; }
+.lc-t     { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
+.lc-dot   { font-size: .72rem; color: #e5e7eb; flex-shrink: 0; }
+.lc-c     { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
+.lc-orig  { font-size: .62rem; color: #9ca3af; margin-left: auto; white-space: nowrap; }
+.lc-diff  { margin-left: auto; font-size: .7rem; font-weight: 600; padding: 1px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.green    { color: #059669; background: #ecfdf5; }
+.red      { color: #dc2626; background: #fef2f2; }
+.grey     { color: #9ca3af; background: #f3f4f6; }
 
-.lc-top    { display: flex; justify-content: space-between; align-items: center; margin-bottom: .35rem; }
-.lc-id     { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; }
-.lc-pilot  { font-size: .72rem; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
-.lc-route  { font-size: .95rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; margin-bottom: .55rem; }
-.lc-times  { display: flex; flex-direction: column; gap: 5px; border-top: .5px solid #f3f4f6; padding-top: .55rem; }
-.lc-row    { display: flex; align-items: center; gap: .4rem; }
-.lc-lbl    { font-size: .7rem; color: #9ca3af; width: 36px; flex-shrink: 0; }
-.lc-t      { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
-.lc-sep    { font-size: .72rem; color: #d1d5db; flex-shrink: 0; }
-.lc-c      { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
-.lc-diff   { margin-left: auto; font-size: .7rem; font-weight: 600; padding: 1px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-.lc-diff.green { color: #059669; background: #ecfdf5; }
-.lc-diff.red   { color: #dc2626; background: #fef2f2; }
-.lc-diff.grey  { color: #9ca3af; background: #f3f4f6; }
-.lc-orig   { font-size: .65rem; color: #9ca3af; white-space: nowrap; margin-left: auto; }
-
-/* Pilot cards */
+/* Pilot grid */
 .pilot-grid { display: grid; gap: .5rem; grid-template-columns: repeat(3, 1fr); }
 @media(max-width: 480px) { .pilot-grid { grid-template-columns: 1fr; } }
 
 .pilot-card {
-  background: #fff;
-  border-radius: var(--r);
-  border: 1px solid #e5e7eb;
-  padding: .85rem .9rem;
-  display: flex;
-  flex-direction: column;
-  gap: .3rem;
+  background: #fff; border-radius: var(--r); border: 1px solid #e5e7eb;
+  padding: .85rem .9rem; display: flex; flex-direction: column; gap: .3rem;
 }
 .pc-name   { font-size: .9rem; font-weight: 600; letter-spacing: -.02em; }
 .pc-time   { font-family: 'DM Mono', monospace; font-size: .7rem; color: #6b7280; }
 .pc-detail { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; line-height: 1.6; margin-top: .2rem; }
-.pc-total  { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: #111827; margin-top: auto; padding-top: .5rem; border-top: .5px solid #f3f4f6; }
+.pc-total  { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: #111827;
+             margin-top: auto; padding-top: .5rem; border-top: .5px solid #f3f4f6; }
 
 /* Global */
 .global-card {
-  background: #111827;
-  border-radius: var(--r);
-  padding: 1rem 1.1rem;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: .75rem;
+  background: #111827; border-radius: var(--r); padding: 1rem 1.1rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem;
 }
 @media(max-width: 400px) { .global-card { grid-template-columns: 1fr 1fr; } }
-.gc-item  { }
-.gc-lbl   { font-family: 'DM Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; margin-bottom: 4px; }
-.gc-val   { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #fff; line-height: 1; }
-.gc-sub   { font-family: 'DM Mono', monospace; font-size: .58rem; color: #4b5563; margin-top: 3px; }
+.gc-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; margin-bottom: 4px; }
+.gc-val { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #fff; line-height: 1; }
+.gc-sub { font-family: 'DM Mono', monospace; font-size: .58rem; color: #4b5563; margin-top: 3px; }
 
 /* Aerogest */
-.aero-card { background: #fff; border-radius: var(--r); border: 1px solid #e5e7eb; overflow: hidden; }
-.aero-hdr  { background: #111827; padding: .65rem 1rem; }
-.aero-ht   { font-weight: 600; font-size: .88rem; color: #fff; }
-.aero-hs   { font-family: 'DM Mono', monospace; font-size: .6rem; color: #6b7280; margin-top: 1px; }
-.aero-body { padding: .85rem 1rem; display: flex; flex-direction: column; gap: .7rem; }
-.a-step    { display: grid; grid-template-columns: 18px 1fr; gap: .5rem; align-items: start; }
-.a-n       { font-family: 'DM Mono', monospace; font-size: .62rem; font-weight: 500; color: #fff;
-             background: #111827; border-radius: 50%; width: 18px; height: 18px;
-             display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.a-t       { font-size: .82rem; color: #374151; line-height: 1.5; }
+.aero-card  { background: #fff; border-radius: var(--r); border: 1px solid #e5e7eb; overflow: hidden; }
+.aero-hdr   { background: #111827; padding: .65rem 1rem; }
+.aero-ht    { font-weight: 600; font-size: .88rem; color: #fff; }
+.aero-hs    { font-family: 'DM Mono', monospace; font-size: .6rem; color: #6b7280; margin-top: 1px; }
+.aero-body  { padding: .85rem 1rem; display: flex; flex-direction: column; gap: .7rem; }
+.a-step     { display: grid; grid-template-columns: 18px 1fr; gap: .5rem; align-items: start; }
+.a-n        { font-family: 'DM Mono', monospace; font-size: .62rem; font-weight: 500; color: #fff;
+              background: #111827; border-radius: 50%; width: 18px; height: 18px;
+              display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.a-t        { font-size: .82rem; color: #374151; line-height: 1.5; }
 .a-t strong { font-weight: 600; color: #111827; }
-.xfers     { margin-top: .4rem; display: flex; flex-direction: column; gap: 4px; }
-.xfer      { background: #f9fafb; border-radius: 6px; padding: 5px 10px;
-             display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
-.xf-l      { font-family: 'DM Mono', monospace; font-size: .67rem; color: #6b7280; }
-.xf-r      { font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500; color: #111827; }
-.tip       { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 7px;
-             padding: .4rem .75rem; font-family: 'DM Mono', monospace;
-             font-size: .67rem; color: #92400e; margin-top: .35rem; line-height: 1.5; }
+.xfers      { margin-top: .4rem; display: flex; flex-direction: column; gap: 4px; }
+.xfer       { background: #f9fafb; border-radius: 6px; padding: 5px 10px;
+              display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.xf-l       { font-family: 'DM Mono', monospace; font-size: .67rem; color: #6b7280; }
+.xf-r       { font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500; color: #111827; }
+.tip        { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 7px;
+              padding: .4rem .75rem; font-family: 'DM Mono', monospace;
+              font-size: .67rem; color: #92400e; margin-top: .35rem; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -132,7 +113,7 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
     </div>
   </div>
 
-  <!-- Legs day 1 -->
+  <!-- Day 1 -->
   <div>
     <p class="sec-title">Mardi 26 mai</p>
     <div class="legs-grid">
@@ -140,34 +121,34 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
       <div class="leg-card" style="border-left:3px solid var(--hugo)">
         <div class="lc-top"><span class="lc-id">Leg 1</span><span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span></div>
         <div class="lc-route">Beauvais → Beaune</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h40</span><span class="lc-sep">·</span><span class="lc-c">346,67 €</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h25</span><span class="lc-sep">·</span><span class="lc-c">314,17 €</span><span class="lc-diff green">−15 min</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h40</span><span class="lc-dot">·</span><span class="lc-c">346,67 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h25</span><span class="lc-dot">·</span><span class="lc-c">314,17 €</span><span class="lc-diff green">−15 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--yanis)">
         <div class="lc-top"><span class="lc-id">Leg 2</span><span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span></div>
         <div class="lc-route">Beaune → Annecy</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h00</span><span class="lc-sep">·</span><span class="lc-c">260,00 €</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h00</span><span class="lc-sep">·</span><span class="lc-c">260,00 €</span><span class="lc-diff grey">= exact</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h00</span><span class="lc-dot">·</span><span class="lc-c">260,00 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h00</span><span class="lc-dot">·</span><span class="lc-c">260,00 €</span><span class="lc-diff grey">= exact</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--hugo)">
         <div class="lc-top"><span class="lc-id">Vol local</span><span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span></div>
         <div class="lc-route">Annecy ↺</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h10</span><span class="lc-sep">·</span><span class="lc-c">151,67 €</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h19</span><span class="lc-sep">·</span><span class="lc-c">171,17 €</span><span class="lc-diff red">+9 min</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h10</span><span class="lc-dot">·</span><span class="lc-c">151,67 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h19</span><span class="lc-dot">·</span><span class="lc-c">171,17 €</span><span class="lc-diff red">+9 min</span></div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Legs day 2 -->
+  <!-- Day 2 -->
   <div>
     <p class="sec-title">Mercredi 27 mai</p>
     <div class="legs-grid">
@@ -175,34 +156,34 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
       <div class="leg-card" style="border-left:3px solid var(--cedric)">
         <div class="lc-top"><span class="lc-id">Leg 3</span><span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span></div>
         <div class="lc-route">Annecy → Montbéliard</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h20</span><span class="lc-sep">·</span><span class="lc-c">303,33 €</span><span class="lc-orig">Annecy→S.Dié</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h41</span><span class="lc-sep">·</span><span class="lc-c">218,83 €</span><span class="lc-diff green">−39 min</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h20</span><span class="lc-dot">·</span><span class="lc-c">303,33 €</span><span class="lc-orig">Annecy→S.Dié</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h41</span><span class="lc-dot">·</span><span class="lc-c">218,83 €</span><span class="lc-diff green">−39 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--cedric)">
         <div class="lc-top"><span class="lc-id">Leg 4</span><span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span></div>
         <div class="lc-route">Montbéliard → Verdun</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-sep">·</span><span class="lc-c">184,17 €</span><span class="lc-orig">S.Dié→Verdun</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h08</span><span class="lc-sep">·</span><span class="lc-c">277,33 €</span><span class="lc-diff red">+43 min</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-dot">·</span><span class="lc-c">184,17 €</span><span class="lc-orig">S.Dié→Verdun</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h08</span><span class="lc-dot">·</span><span class="lc-c">277,33 €</span><span class="lc-diff red">+43 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--yanis)">
         <div class="lc-top"><span class="lc-id">Leg 5</span><span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span></div>
         <div class="lc-route">Verdun → Beauvais</div>
-        <div class="lc-times">
-          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-sep">·</span><span class="lc-c">184,17 €</span></div>
-          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h39</span><span class="lc-sep">·</span><span class="lc-c">214,50 €</span><span class="lc-diff red">+14 min</span></div>
+        <div class="lc-rows">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-dot">·</span><span class="lc-c">184,17 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h39</span><span class="lc-dot">·</span><span class="lc-c">214,50 €</span><span class="lc-diff red">+14 min</span></div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Pilots -->
+  <!-- Par pilote -->
   <div>
     <p class="sec-title">Par pilote</p>
     <div class="pilot-grid">
@@ -210,30 +191,21 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
       <div class="pilot-card">
         <div class="pc-name" style="color:var(--hugo)">Hugo</div>
         <div class="pc-time">3h44 · 224 min</div>
-        <div class="pc-detail">
-          485,34 € brut<br>
-          − 43,33 € bonus
-        </div>
+        <div class="pc-detail">485,34 € brut<br>− 43,33 € bonus</div>
         <div class="pc-total">442,01 €</div>
       </div>
 
       <div class="pilot-card">
         <div class="pc-name" style="color:var(--yanis)">Yanis</div>
         <div class="pc-time">3h39 · 219 min</div>
-        <div class="pc-detail">
-          474,50 € brut<br>
-          − 42,36 € bonus
-        </div>
+        <div class="pc-detail">474,50 € brut<br>− 42,36 € bonus</div>
         <div class="pc-total">432,14 €</div>
       </div>
 
       <div class="pilot-card">
         <div class="pc-name" style="color:var(--cedric)">Cédric</div>
         <div class="pc-time">3h49 · 229 min</div>
-        <div class="pc-detail">
-          496,16 € brut<br>
-          − 44,30 € bonus
-        </div>
+        <div class="pc-detail">496,16 € brut<br>− 44,30 € bonus</div>
         <div class="pc-total">451,86 €</div>
       </div>
 
@@ -242,17 +214,17 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
 
   <!-- Global -->
   <div class="global-card">
-    <div class="gc-item">
+    <div>
       <div class="gc-lbl">Durée totale</div>
       <div class="gc-val">11h12</div>
       <div class="gc-sub">payé 10h12</div>
     </div>
-    <div class="gc-item">
+    <div>
       <div class="gc-lbl">Coût total</div>
       <div class="gc-val">1 326,01 €</div>
       <div class="gc-sub">−130 € bonus</div>
     </div>
-    <div class="gc-item">
+    <div>
       <div class="gc-lbl">Écart pilotes</div>
       <div class="gc-val" style="color:#34d399">19,87 €</div>
       <div class="gc-sub">très équitable ✓</div>
@@ -260,47 +232,41 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
   </div>
 
   <!-- Aerogest -->
-  <div class="aero-card">
-    <div class="aero-hdr">
-      <div class="aero-ht">Procédure Aerogest</div>
-      <div class="aero-hs">130 € à redistribuer au pro-rata</div>
-    </div>
-    <div class="aero-body">
-
-      <div class="a-step">
-        <div class="a-n">1</div>
-        <div class="a-t"><strong>Chaque pilote entre ses propres vols</strong> sur Aerogest au taux normal 130 €/h.</div>
+  <div>
+    <p class="sec-title">Procédure Aerogest</p>
+    <div class="aero-card">
+      <div class="aero-hdr">
+        <div class="aero-ht">Comment récupérer le bonus</div>
+        <div class="aero-hs">130 € à redistribuer au pro-rata des minutes</div>
       </div>
+      <div class="aero-body">
 
-      <div class="a-step">
-        <div class="a-n">2</div>
-        <div class="a-t">
-          <strong>Cédric dépose 1 300 €</strong> sur son compte pour déclencher le bonus de 130 €.
-          <div class="tip">💡 Cédric a le plus volé (229 min) → il capte la plus grande part du bonus.</div>
+        <div class="a-step">
+          <div class="a-n">1</div>
+          <div class="a-t"><strong>Chaque pilote entre ses propres vols</strong> sur Aerogest au taux normal 130 €/h.</div>
         </div>
-      </div>
 
-      <div class="a-step">
-        <div class="a-n">3</div>
-        <div class="a-t">
-          <strong>Cédric redistribue les 130 €</strong> via transferts Aerogest :
-          <div class="xfers">
-            <div class="xfer">
-              <span class="xf-l">→ <strong style="color:var(--hugo)">Hugo</strong> &emsp; 224/672 × 130</span>
-              <span class="xf-r">43,33 €</span>
-            </div>
-            <div class="xfer">
-              <span class="xf-l">→ <strong style="color:var(--yanis)">Yanis</strong> &emsp; 219/672 × 130</span>
-              <span class="xf-r">42,36 €</span>
-            </div>
-            <div class="xfer">
-              <span class="xf-l"><strong style="color:var(--cedric)">Cédric</strong> garde &ensp; 229/672 × 130</span>
-              <span class="xf-r">44,30 €</span>
+        <div class="a-step">
+          <div class="a-n">2</div>
+          <div class="a-t">
+            <strong>Cédric dépose 1 300 €</strong> sur son compte pour déclencher le bonus de 130 €.
+            <div class="tip">💡 Cédric a le plus volé (229 min) → il capte la plus grande part du bonus, ce qui réduit les transferts.</div>
+          </div>
+        </div>
+
+        <div class="a-step">
+          <div class="a-n">3</div>
+          <div class="a-t">
+            <strong>Cédric redistribue les 130 €</strong> via transferts Aerogest :
+            <div class="xfers">
+              <div class="xfer"><span class="xf-l">→ <strong style="color:var(--hugo)">Hugo</strong> &emsp; 224/672 × 130</span><span class="xf-r">43,33 €</span></div>
+              <div class="xfer"><span class="xf-l">→ <strong style="color:var(--yanis)">Yanis</strong> &emsp; 219/672 × 130</span><span class="xf-r">42,36 €</span></div>
+              <div class="xfer"><span class="xf-l"><strong style="color:var(--cedric)">Cédric</strong> garde &ensp; 229/672 × 130</span><span class="xf-r">44,30 €</span></div>
             </div>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 
