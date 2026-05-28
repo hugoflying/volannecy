@@ -3,755 +3,532 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Répartition des legs</title>
+<title>Bilan du vol — 26-27 mai 2026</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --hugo:          #2563eb;
-  --hugo-light:    #eff6ff;
-  --hugo-border:   #bfdbfe;
-  --yanis:         #059669;
-  --yanis-light:   #ecfdf5;
-  --yanis-border:  #a7f3d0;
-  --cedric:        #d97706;
-  --cedric-light:  #fffbeb;
-  --cedric-border: #fcd34d;
+  --hugo:         #2563eb;
+  --hugo-light:   #eff6ff;
+  --yanis:        #059669;
+  --yanis-light:  #ecfdf5;
+  --cedric:       #d97706;
+  --cedric-light: #fffbeb;
   --r: 10px;
 }
-
 *, body { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
-.mono    { font-family: 'DM Mono', monospace; }
-
 body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
 
-/* ── Header ── */
-.hdr { border-bottom: 2px solid #111827; padding-bottom: .75rem; margin-bottom: 1.25rem; }
+.wrap { max-width: 820px; margin: 0 auto; }
+
+/* Header */
+.hdr { border-bottom: 2px solid #111827; padding-bottom: .75rem; margin-bottom: 1.5rem;
+       display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:.5rem; }
 .hdr h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
 .hdr-sub { font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af; text-transform: uppercase; letter-spacing: .1em; }
 
-/* ── Constraint bar ── */
-.cbar {
-  background: var(--cedric-light); border: 1px solid var(--cedric-border);
-  border-radius: var(--r); padding: .55rem .9rem;
-  font-family: 'DM Mono', monospace; font-size: .72rem; color: #92400e;
-  display: flex; align-items: center; gap: .5rem; margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-}
-.cbar.unlocked {
-  background: #f9fafb; border-color: #e5e7eb; color: #9ca3af;
-}
-.cbar-btn {
-  margin-left: auto; padding: 2px 10px; border-radius: 6px; font-size: .65rem;
-  font-family: 'DM Mono', monospace; font-weight: 500; cursor: pointer;
-  border: 1px solid #d97706; background: transparent; color: #92400e;
-  transition: all .15s; white-space: nowrap;
-}
-.cbar-btn:hover { background: #d97706; color: #fff; }
-.cbar.unlocked .cbar-btn { border-color: #9ca3af; color: #6b7280; }
-.cbar.unlocked .cbar-btn:hover { background: #6b7280; color: #fff; }
+/* Rate note */
+.rate-note { background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--r);
+             padding:.6rem .9rem; font-family:'DM Mono',monospace; font-size:.7rem;
+             color:#1d4ed8; margin-bottom:1.25rem; display:flex; gap:.5rem; align-items:flex-start; }
 
-/* ── Day label ── */
-.day-lbl {
-  font-family: 'DM Mono', monospace; font-size: .62rem;
-  text-transform: uppercase; letter-spacing: .12em; color: #9ca3af;
-  border-bottom: .5px solid #e5e7eb; padding-bottom: .4rem; margin-bottom: .6rem;
-}
+/* Section label */
+.sec-lbl { font-family:'DM Mono',monospace; font-size:.62rem; text-transform:uppercase;
+           letter-spacing:.12em; color:#9ca3af; border-bottom:.5px solid #e5e7eb;
+           padding-bottom:.4rem; margin-bottom:.75rem; }
 
-/* ── Leg cards grid ── */
-.legs-day { display: grid; gap: .6rem; margin-bottom: 1rem; grid-template-columns: 1fr; }
-@media (min-width: 600px) { .legs-day { grid-template-columns: repeat(3,1fr); } }
+/* Legs grid */
+.legs-grid { display:grid; gap:.6rem; grid-template-columns:1fr; margin-bottom:1.25rem; }
+@media(min-width:600px){ .legs-grid { grid-template-columns:repeat(3,1fr); } }
 
-.leg-card {
-  background: #fff; border: 1px solid #e5e7eb;
-  border-radius: var(--r); padding: .85rem 1rem; transition: border-color .2s, background .2s;
-}
-.leg-card.locked { background: var(--cedric-light); border-color: var(--cedric-border); }
-.leg-card.bad    { border-color: #dc2626 !important; background: #fff5f5 !important; }
+.leg-card { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r); padding:.85rem 1rem; }
+.leg-top  { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.25rem; }
+.leg-id   { font-family:'DM Mono',monospace; font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:#9ca3af; }
+.leg-route { font-size:.9rem; font-weight:500; letter-spacing:-.01em; }
+.leg-icao  { font-family:'DM Mono',monospace; font-size:.63rem; color:#9ca3af; margin-bottom:.5rem; }
 
-.leg-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .2rem; }
-.leg-id  { font-family: 'DM Mono', monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; display: flex; align-items: center; gap: .35rem; }
-.leg-cost { font-family: 'DM Mono', monospace; font-size: .82rem; font-weight: 500; color: #111827; }
-.leg-cost-wrap { text-align: right; }
-.leg-cost-gross { font-family: 'DM Mono', monospace; font-size: .68rem; color: #d1d5db; text-decoration: line-through; line-height: 1; }
-.leg-cost-discount { font-family: 'DM Mono', monospace; font-size: .6rem; color: #059669; line-height: 1.3; }
-.leg-route { font-size: .9rem; font-weight: 500; letter-spacing: -.01em; }
-.leg-icao  { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af; margin-bottom: .6rem; }
-.locked-tag { background: var(--cedric); color: #fff; font-size: .55rem; padding: 1px 5px; border-radius: 3px; font-weight: 500; }
+.chip { display:inline-flex; align-items:center; gap:4px; font-size:.73rem; font-weight:500;
+        padding:2px 9px; border-radius:20px; margin-bottom:.55rem; }
 
-/* ── Select ── */
-.psel {
-  width: 100%; padding: .45rem .75rem; border-radius: 8px; border: 1px solid #e5e7eb;
-  background: #f9fafb; font-family: 'DM Sans', sans-serif;
-  font-size: .85rem; font-weight: 500; color: #374151; cursor: pointer;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
-  transition: all .15s;
-}
-.psel:focus { outline: none; border-color: #374151; }
-.psel:disabled { opacity: .65; cursor: not-allowed; }
-.psel.is-hugo   { border-color: var(--hugo-border);   background-color: var(--hugo-light);   color: var(--hugo); }
-.psel.is-yanis  { border-color: var(--yanis-border);  background-color: var(--yanis-light);  color: var(--yanis); }
-.psel.is-cedric { border-color: var(--cedric-border); background-color: var(--cedric-light); color: var(--cedric); }
+/* Cost block inside card */
+.leg-costs { border-top:.5px solid #f3f4f6; padding-top:.55rem; display:flex; flex-direction:column; gap:3px; }
+.cost-row  { display:flex; justify-content:space-between; align-items:center; }
+.cost-lbl  { font-family:'DM Mono',monospace; font-size:.6rem; color:#9ca3af; }
+.cost-val  { font-family:'DM Mono',monospace; font-size:.72rem; }
+.cost-val.gross  { color:#d1d5db; text-decoration:line-through; }
+.cost-val.disc   { color:#059669; font-size:.65rem; }
+.cost-val.net    { color:#111827; font-weight:500; font-size:.82rem; }
 
-/* ── Actions bar ── */
-.actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.1rem; }
+/* Time row */
+.leg-time-row { display:flex; justify-content:space-between; align-items:center;
+                margin-top:.5rem; padding-top:.5rem; border-top:.5px solid #f9fafb; }
+.leg-planned  { font-family:'DM Mono',monospace; font-size:.6rem; color:#d1d5db; }
+.leg-real     { font-family:'DM Mono',monospace; font-size:.68rem; color:#374151; font-weight:500; }
+.leg-diff     { font-family:'DM Mono',monospace; font-size:.6rem; }
 
-.btn-main {
-  background: #111827; color: #fff; border: none; border-radius: 8px;
-  padding: .55rem 1rem; font-family: 'DM Sans', sans-serif;
-  font-size: .82rem; font-weight: 500; cursor: pointer; transition: background .15s;
-}
-.btn-main:hover { background: #374151; }
+/* Pilot cards */
+.pilot-cards { display:flex; flex-direction:column; gap:8px; margin-bottom:.75rem; }
+.pilot-card  { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
+               padding:.85rem 1rem; }
+.pc-top      { display:flex; align-items:center; gap:.75rem; margin-bottom:.6rem; }
+.pc-strip    { width:4px; border-radius:4px; align-self:stretch; min-height:40px; flex-shrink:0; }
+.pc-name     { font-size:.95rem; font-weight:600; letter-spacing:-.02em; }
+.pc-legs     { font-family:'DM Mono',monospace; font-size:.62rem; color:#9ca3af; line-height:1.6; }
+.pc-amounts  { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-bottom:.5rem; }
+.pc-amt      { background:#f9fafb; border-radius:6px; padding:6px 8px; }
+.pc-amt-lbl  { font-family:'DM Mono',monospace; font-size:.58rem; color:#9ca3af; margin-bottom:2px; }
+.pc-amt-val  { font-family:'DM Mono',monospace; font-size:.82rem; font-weight:500; color:#111827; }
+.pc-amt.accent { background:#111827; }
+.pc-amt.accent .pc-amt-lbl { color:#9ca3af; }
+.pc-amt.accent .pc-amt-val { color:#fff; font-size:.95rem; }
+.pc-bar-row  { display:flex; align-items:center; gap:.5rem; }
+.bar-bg { flex:1; height:3px; background:#f3f4f6; border-radius:3px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:3px; }
+.bar-lbl { font-family:'DM Mono',monospace; font-size:.6rem; color:#d1d5db; white-space:nowrap; }
 
-.btn-ghost {
-  background: #fff; color: #374151; border: 1px solid #e5e7eb; border-radius: 8px;
-  padding: .5rem .9rem; font-family: 'DM Sans', sans-serif;
-  font-size: .82rem; font-weight: 400; cursor: pointer; transition: all .15s;
-}
-.btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
+/* Summary row */
+.summary-row { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
+               padding:.8rem 1rem; display:flex; justify-content:space-between;
+               align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:.5rem; }
+.sr-left { font-size:.75rem; color:#9ca3af; }
+.sr-right { font-family:'DM Mono',monospace; font-size:.82rem; font-weight:500; }
+.badge-green { background:#ecfdf5; color:#059669; font-size:.72rem; font-weight:500;
+               padding:3px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; }
 
-/* ── Toggle ── */
-.toggle-lbl { display: inline-flex; align-items: center; gap: .45rem; cursor: pointer; user-select: none; margin-left: auto; }
-.toggle-lbl input { display: none; }
-.toggle-track { width: 34px; height: 19px; background: #e5e7eb; border-radius: 20px; position: relative; transition: background .2s; flex-shrink: 0; }
-.toggle-thumb { position: absolute; top: 2.5px; left: 2.5px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-.toggle-lbl input:checked ~ .toggle-track { background: #111827; }
-.toggle-lbl input:checked ~ .toggle-track .toggle-thumb { transform: translateX(15px); }
-.toggle-txt { font-family: 'DM Mono', monospace; font-size: .68rem; color: #9ca3af; }
-.toggle-lbl input:checked ~ .toggle-txt { color: #111827; }
+/* Aerogest */
+.aero-panel  { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
+               overflow:hidden; margin-top:1rem; }
+.aero-hdr    { background:#111827; color:#fff; padding:.8rem 1rem;
+               display:flex; align-items:center; gap:.5rem; }
+.aero-title  { font-weight:600; font-size:.9rem; letter-spacing:-.02em; }
+.aero-sub    { font-family:'DM Mono',monospace; font-size:.65rem; color:#6b7280; margin-top:1px; }
+.aero-steps  { padding:.9rem 1rem; display:flex; flex-direction:column; gap:.85rem; }
+.aero-step   { display:grid; grid-template-columns:22px 1fr; gap:.5rem; align-items:start; }
+.step-num    { font-family:'DM Mono',monospace; font-size:.7rem; font-weight:500; color:#fff;
+               background:#111827; border-radius:50%; width:20px; height:20px;
+               display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.step-body   { font-size:.82rem; color:#374151; line-height:1.55; }
+.step-body strong { font-weight:600; color:#111827; }
 
-/* ── Warnings ── */
-.warn { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: .5rem .9rem; font-family: 'DM Mono', monospace; font-size: .7rem; color: #92400e; display: none; margin-bottom: .6rem; }
-.warn.on { display: block; }
+.xfer-rows   { display:flex; flex-direction:column; gap:5px; margin-top:.5rem; }
+.xfer-row    { background:#f9fafb; border-radius:6px; padding:6px 10px;
+               display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; }
+.xfer-from   { font-family:'DM Mono',monospace; font-size:.7rem; color:#6b7280; }
+.xfer-formula{ font-family:'DM Mono',monospace; font-size:.65rem; color:#9ca3af; flex:1; text-align:center; }
+.xfer-amount { font-family:'DM Mono',monospace; font-size:.75rem; font-weight:500; color:#111827; }
 
-/* ── Annecy row ── */
-.annecy-row { background: #f9fafb; border-radius: 8px; padding: .55rem .9rem; display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af; margin-bottom: 1rem; }
-.annecy-item { display: flex; align-items: center; gap: 5px; }
-.annecy-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #e5e7eb; }
+.net-rows    { display:flex; flex-direction:column; gap:5px; margin-top:.5rem; }
+.net-row     { border-radius:6px; padding:7px 10px; display:flex;
+               align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; }
+.net-pilot   { font-size:.82rem; font-weight:600; }
+.net-formula { font-family:'DM Mono',monospace; font-size:.65rem; color:#9ca3af; flex:1; text-align:center; }
+.net-total   { font-family:'DM Mono',monospace; font-size:.85rem; font-weight:500; }
 
-.divider { border: none; border-top: 1px solid #f3f4f6; margin: .85rem 0; }
+.highlight-box { background:#fffbeb; border:1px solid #fcd34d; border-radius:8px;
+                 padding:.5rem .85rem; font-family:'DM Mono',monospace; font-size:.7rem;
+                 color:#92400e; margin-top:.5rem; line-height:1.5; }
+/* Global summary */
+.global-summary { margin-bottom:.75rem; }
+.gs-row  { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-bottom:.5rem; }
+@media(max-width:600px){ .gs-row { grid-template-columns:repeat(2,1fr); } }
+.gs-cell { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r); padding:.85rem 1rem; }
+.gs-cell.gs-total { background:#111827; border-color:#111827; }
+.gs-name   { font-size:.9rem; font-weight:600; letter-spacing:-.02em; margin-bottom:.3rem; }
+.gs-time   { font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#111827; line-height:1; }
+.gs-cell.gs-total .gs-time { color:#e5e7eb; }
+.gs-min    { font-size:.65rem; color:#9ca3af; font-weight:400; }
+.gs-cost   { font-family:'DM Mono',monospace; font-size:1.25rem; font-weight:500; color:#111827; margin-top:.35rem; line-height:1; }
+.gs-sublbl { font-family:'DM Mono',monospace; font-size:.58rem; color:#9ca3af; margin-top:.25rem; }
+.gs-ecart  { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:.5rem .9rem;
+             font-family:'DM Mono',monospace; font-size:.7rem; color:#065f46;
+             display:flex; align-items:center; gap:.4rem; }
 
-/* ── Pilot cards ── */
-.pilot-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-
-.pilot-card {
-  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
-  padding: .85rem 1rem; display: grid; gap: .35rem .75rem;
-  grid-template-columns: 4px 1fr auto;
-  grid-template-rows: auto auto auto;
-  align-items: center;
-}
-
-.p-strip { grid-column: 1; grid-row: 1 / 4; width: 4px; border-radius: 4px; align-self: stretch; }
-
-.p-name-legs {
-  grid-column: 2; grid-row: 1;
-  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; min-width: 0;
-}
-.p-name  { font-size: .95rem; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; flex-shrink: 0; }
-.p-legs-inline {
-  font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af;
-  line-height: 1.5; min-width: 0;
-}
-
-.p-right { grid-column: 3; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: flex-end; gap: .3rem; }
-
-.p-bar-row   { grid-column: 2 / 3; grid-row: 2; display: flex; align-items: center; gap: .5rem; }
-.p-meta-row  { grid-column: 2 / 4; grid-row: 3; display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
-
-.bar-bg   { flex: 1; height: 3px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-.bar-lbl  { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; white-space: nowrap; }
-
-.p-total { font-family: 'DM Mono', monospace; font-size: 1.25rem; font-weight: 500; color: #111827; line-height: 1; }
-.p-airbnb { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; }
-.p-time  { font-family: 'DM Mono', monospace; font-size: .72rem; color: #6b7280; background: #f3f4f6; border-radius: 5px; padding: 2px 6px; white-space: nowrap; }
-.p-delta { font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500; padding: 2px 7px; border-radius: 5px; }
-.delta-pos  { color: #dc2626; background: #fef2f2; }
-.delta-neg  { color: #059669; background: #ecfdf5; }
-.delta-zero { color: #9ca3af; background: #f3f4f6; }
-
-/* ── Proposals panel ── */
-.proposals-panel {
-  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
-  margin-bottom: 1rem; overflow: hidden;
-}
-.proposals-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: .7rem 1rem; border-bottom: 1px solid #f3f4f6; background: #f9fafb;
-}
-.proposals-title { font-family: 'DM Mono', monospace; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: #374151; }
-.proposals-close { background: none; border: none; font-size: 1rem; color: #9ca3af; cursor: pointer; padding: 0 4px; line-height: 1; }
-.proposals-close:hover { color: #374151; }
-
-.proposal-row {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .6rem 1rem; border-bottom: 1px solid #f9fafb;
-  cursor: pointer; transition: background .12s;
-}
-.proposal-row:last-child { border-bottom: none; }
-.proposal-row:hover { background: #f9fafb; }
-.proposal-row.is-active { background: #eff6ff; border-left: 3px solid var(--hugo); padding-left: calc(1rem - 3px); }
-
-.prop-pill {
-  font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500;
-  background: #111827; color: #fff; padding: 3px 10px; border-radius: 20px;
-  white-space: nowrap; flex-shrink: 0;
-}
-.proposal-row.is-active .prop-pill { background: var(--hugo); }
-.proposal-row:hover:not(.is-active) .prop-pill { background: #374151; }
-
-.prop-ecart { font-family: 'DM Mono', monospace; font-size: .72rem; }
-
-/* ── Fairness panel ── */
-.fair-card {
-  background: #fff; border: 1px solid #e5e7eb; border-radius: var(--r);
-  padding: .9rem 1rem; display: flex; align-items: center;
-  justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: .5rem;
-}
-.fair-num   { font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 500; letter-spacing: -.04em; transition: color .3s; line-height: 1; }
-.fair-label { font-size: .7rem; color: #9ca3af; margin-bottom: 3px; }
-.chip { display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; font-weight: 500; padding: .3rem .7rem; border-radius: 20px; transition: all .3s; }
-.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
-/* ── Airbnb row ── */
-.airbnb-row { background: #f9fafb; border-radius: 8px; padding: .55rem .9rem; display: flex; justify-content: space-between; align-items: center; font-size: .78rem; color: #6b7280; flex-wrap: wrap; gap: .25rem; }
-
-/* ── Split panel ── */
-.split-panel { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: var(--r); padding: .9rem 1rem; margin-top: .5rem; }
-.split-hdr   { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5rem; margin-bottom: .65rem; }
-.split-title { font-family: 'DM Mono', monospace; font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; }
-.split-share { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #111827; }
-.split-rows  { display: flex; flex-direction: column; gap: 6px; }
-.split-row   { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: .55rem .85rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
-.split-name  { font-size: .85rem; font-weight: 600; min-width: 55px; }
-.split-paid  { font-family: 'DM Mono', monospace; font-size: .72rem; color: #6b7280; flex: 1; }
-.split-diff  { font-family: 'DM Mono', monospace; font-size: .78rem; font-weight: 500; text-align: right; }
-.split-note  { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; text-align: right; white-space: nowrap; }
+.divider { border:none; border-top:1px solid #f3f4f6; margin:.85rem 0; }
 </style>
 </head>
 <body>
-<div style="max-width:820px;margin:0 auto;">
+<div class="wrap">
 
   <!-- Header -->
   <div class="hdr">
     <div>
-      <p class="hdr-sub">26–27 mai 2026 · 3 pilotes</p>
-      <h1>Répartition des legs</h1>
+      <p class="hdr-sub">Bilan · 26–27 mai 2026 · 3 pilotes</p>
+      <h1>Résumé du voyage</h1>
     </div>
     <div style="text-align:right">
-      <p class="hdr-sub">11h00 de vol · 130 €/h</p>
-      <p class="hdr-sub" style="color:#111827;font-size:.75rem;margin-top:2px;">1 300 € <span style="color:#059669;font-size:.65rem;">(-130€ 1h offerte)</span></p>
+      <p class="hdr-sub">11h12 réelles · 1h offerte après 10h</p>
+      <p style="font-family:'DM Mono',monospace;font-size:.78rem;margin-top:3px;">
+        <span style="color:#d1d5db;text-decoration:line-through;">1 456,00 €</span>
+        &nbsp;→&nbsp;<strong>1 326,00 €</strong>
+        <span style="color:#059669;font-size:.65rem;">&minus;130,00 €</span>
+      </p>
     </div>
   </div>
 
-  <!-- Constraint -->
-  <div class="cbar" id="cbar">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    <span id="cbar-txt">Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)</span>
-    <button class="cbar-btn" id="cbar-btn" onclick="toggleLock()">Enlever</button>
-  </div>
-
-  <!-- Actions + Proposals -->
-  <div class="actions">
-    <button class="btn-main" onclick="showProposals()">✦ Voir les meilleures combinaisons</button>
-    <button class="btn-ghost" onclick="resetAll()">Effacer</button>
-    <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-consec" onchange="update()">
-      <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      <span class="toggle-txt">Pas de legs consécutifs</span>
-    </label>
-    <label class="toggle-lbl">
-      <input type="checkbox" id="toggle-daily" onchange="update()">
-      <span class="toggle-track"><span class="toggle-thumb"></span></span>
-      <span class="toggle-txt">Vol chaque jour</span>
-    </label>
-  </div>
-
-  <!-- Proposals panel -->
-  <div class="proposals-panel" id="proposals-panel" style="display:none">
-    <div class="proposals-hdr">
-      <span class="proposals-title">Meilleures combinaisons</span>
-      <button class="proposals-close" onclick="$('proposals-panel').style.display='none'">✕</button>
-    </div>
-    <div id="proposals-list"></div>
+  <!-- Rate note -->
+  <div class="rate-note">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+    Taux utilisé : <strong>130 €/h</strong> = 2,1667 €/min &nbsp;·&nbsp;
+    Vérification : 79 min (vol local) × 130/60 = <strong>171,17 €</strong> ✓
+    &nbsp;·&nbsp; Note : 129,6742…€/h donnerait 170,74 € pour 79 min, pas 171,17 €.
   </div>
 
   <!-- Day 1 -->
-  <p class="day-lbl">Mardi 26 mai 2026</p>
-  <div class="legs-day">
-    <div class="leg-card" id="card-leg1">
-      <div class="leg-top"><span class="leg-id">Leg 1</span><div class="leg-cost-wrap"><div class="leg-cost-gross">347 €</div><div class="leg-cost">315 €</div><div class="leg-cost-discount">−32 € offerts</div></div></div>
+  <p class="sec-lbl">Mardi 26 mai 2026</p>
+  <div class="legs-grid">
+
+    <div class="leg-card" style="border-left:3px solid var(--hugo)">
+      <div class="leg-top"><span class="leg-id">Leg 1</span></div>
       <div class="leg-route">Beauvais → Beaune</div>
-      <div class="leg-icao">LFOB → LFGF · 2h40</div>
-      <select class="psel" id="sel-leg1" onchange="update()">
-        <option value="">— Choisir —</option>
-        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
-      </select>
-    </div>
-    <div class="leg-card" id="card-leg2">
-      <div class="leg-top"><span class="leg-id">Leg 2</span><div class="leg-cost-wrap"><div class="leg-cost-gross">260 €</div><div class="leg-cost">236 €</div><div class="leg-cost-discount">−24 € offerts</div></div></div>
-      <div class="leg-route">Beaune → Annecy</div>
-      <div class="leg-icao">LFGF → LFLP · 2h00</div>
-      <select class="psel" id="sel-leg2" onchange="update()">
-        <option value="">— Choisir —</option>
-        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
-      </select>
-    </div>
-    <div class="leg-card" id="card-vol">
-      <div class="leg-top">
-        <span class="leg-id">Vol local <span style="font-size:.58rem;background:#f3f4f6;color:#6b7280;padding:1px 5px;border-radius:3px;">Annecy</span></span>
-        <div class="leg-cost-wrap"><div class="leg-cost-gross">152 €</div><div class="leg-cost">138 €</div><div class="leg-cost-discount">−14 € offerts</div></div>
+      <div class="leg-icao">LFOB → LFGF</div>
+      <span class="chip" style="background:var(--hugo-light);color:var(--hugo)">Hugo</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">314,17 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;28,05 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">286,12 €</span></div>
       </div>
-      <div class="leg-route">Annecy → Annecy</div>
-      <div class="leg-icao">LFLP → LFLP · 1h10</div>
-      <select class="psel" id="sel-vol" onchange="update()">
-        <option value="">— Choisir —</option>
-        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
-      </select>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 2h40</span>
+        <span class="leg-real">réel 2h25 (145 min)</span>
+        <span class="leg-diff" style="color:#059669">−15 min</span>
+      </div>
     </div>
+
+    <div class="leg-card" style="border-left:3px solid var(--yanis)">
+      <div class="leg-top"><span class="leg-id">Leg 2</span></div>
+      <div class="leg-route">Beaune → Annecy</div>
+      <div class="leg-icao">LFGF → LFLP</div>
+      <span class="chip" style="background:var(--yanis-light);color:var(--yanis)">Yanis</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">260,00 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;23,21 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">236,79 €</span></div>
+      </div>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 2h00</span>
+        <span class="leg-real">réel 2h00 (120 min)</span>
+        <span class="leg-diff" style="color:#9ca3af">= exact</span>
+      </div>
+    </div>
+
+    <div class="leg-card" style="border-left:3px solid var(--hugo)">
+      <div class="leg-top"><span class="leg-id">Vol local</span></div>
+      <div class="leg-route">Annecy → Annecy</div>
+      <div class="leg-icao">LFLP · Annecy</div>
+      <span class="chip" style="background:var(--hugo-light);color:var(--hugo)">Hugo</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">171,17 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;15,28 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">155,89 €</span></div>
+      </div>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 1h10</span>
+        <span class="leg-real">réel 1h19 (79 min)</span>
+        <span class="leg-diff" style="color:#dc2626">+9 min</span>
+      </div>
+    </div>
+
   </div>
 
   <!-- Day 2 -->
-  <p class="day-lbl">Mercredi 27 mai 2026</p>
-  <div class="legs-day">
-    <div class="leg-card" id="card-leg3">
-      <div class="leg-top"><span class="leg-id">Leg 3</span><div class="leg-cost-wrap"><div class="leg-cost-gross">303 €</div><div class="leg-cost">276 €</div><div class="leg-cost-discount">−27 € offerts</div></div></div>
-      <div class="leg-route">Annecy → Saint-Dié</div>
-      <div class="leg-icao">LFLP → LFGY · 2h20</div>
-      <select class="psel" id="sel-leg3" onchange="update()">
-        <option value="">— Choisir —</option>
-        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
-      </select>
-    </div>
-    <div class="leg-card locked" id="card-leg4">
-      <div class="leg-top">
-        <span class="leg-id">Leg 4 <span class="locked-tag" id="leg4-tag">imposé</span></span>
-        <div class="leg-cost-wrap"><div class="leg-cost-gross">184 €</div><div class="leg-cost">167 €</div><div class="leg-cost-discount">−17 € offerts</div></div>
-      </div>
-      <div class="leg-route">Saint-Dié → Verdun</div>
-      <div class="leg-icao">LFGY → LFGW · 1h25</div>
-      <select class="psel is-cedric" id="sel-leg4" onchange="update()" disabled>
-        <option value="">— Choisir —</option>
-        <option selected>Cédric</option>
-        <option>Hugo</option><option>Yanis</option>
-      </select>
-    </div>
-    <div class="leg-card" id="card-leg5">
-      <div class="leg-top"><span class="leg-id">Leg 5</span><div class="leg-cost-wrap"><div class="leg-cost-gross">184 €</div><div class="leg-cost">168 €</div><div class="leg-cost-discount">−16 € offerts</div></div></div>
-      <div class="leg-route">Verdun → Beauvais</div>
-      <div class="leg-icao">LFGW → LFOB · 1h25</div>
-      <select class="psel" id="sel-leg5" onchange="update()">
-        <option value="">— Choisir —</option>
-        <option>Hugo</option><option>Yanis</option><option>Cédric</option>
-      </select>
-    </div>
-  </div>
+  <p class="sec-lbl">Mercredi 27 mai 2026</p>
+  <div class="legs-grid">
 
-  <!-- Warnings -->
-  <div class="warn" id="w-unassigned">⚠ Des legs ne sont pas encore attribués.</div>
-  <div class="warn" id="w-consec"></div>
-  <div class="warn" id="w-annecy">⚠ Règle Annecy non respectée — chaque pilote doit avoir au moins un leg à Annecy.</div>
+    <div class="leg-card" style="border-left:3px solid var(--cedric)">
+      <div class="leg-top"><span class="leg-id">Leg 3</span></div>
+      <div class="leg-route">Annecy → Montbéliard</div>
+      <div class="leg-icao">LFLP → LFGM</div>
+      <span class="chip" style="background:var(--cedric-light);color:var(--cedric)">Cédric</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">218,83 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;19,54 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">199,29 €</span></div>
+      </div>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 2h20 (S.Dié)</span>
+        <span class="leg-real">réel 1h41 (101 min)</span>
+        <span class="leg-diff" style="color:#059669">−39 min · destination modifiée</span>
+      </div>
+    </div>
+
+    <div class="leg-card" style="border-left:3px solid var(--cedric)">
+      <div class="leg-top"><span class="leg-id">Leg 4</span></div>
+      <div class="leg-route">Montbéliard → Verdun</div>
+      <div class="leg-icao">LFGM → LFGW</div>
+      <span class="chip" style="background:var(--cedric-light);color:var(--cedric)">Cédric</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">277,33 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;24,76 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">252,57 €</span></div>
+      </div>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 1h25 (S.Dié)</span>
+        <span class="leg-real">réel 2h08 (128 min)</span>
+        <span class="leg-diff" style="color:#dc2626">+43 min · destination modifiée</span>
+      </div>
+    </div>
+
+    <div class="leg-card" style="border-left:3px solid var(--yanis)">
+      <div class="leg-top"><span class="leg-id">Leg 5</span></div>
+      <div class="leg-route">Verdun → Beauvais</div>
+      <div class="leg-icao">LFGW → LFOB</div>
+      <span class="chip" style="background:var(--yanis-light);color:var(--yanis)">Yanis</span>
+      <div class="leg-costs">
+        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">214,50 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;19,15 €</span></div>
+        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">195,35 €</span></div>
+      </div>
+      <div class="leg-time-row">
+        <span class="leg-planned">prévu 1h25</span>
+        <span class="leg-real">réel 1h39 (99 min)</span>
+        <span class="leg-diff" style="color:#dc2626">+14 min</span>
+      </div>
+    </div>
+
+  </div>
 
   <hr class="divider">
 
   <!-- Pilot cards -->
   <div class="pilot-cards">
 
-    <div class="pilot-card" id="pc-hugo">
-      <div class="p-strip" id="ps-hugo" style="background:var(--hugo)"></div>
-      <div class="p-name-legs">
-        <span class="p-name" style="color:var(--hugo)">Hugo</span>
-        <span class="p-legs-inline" id="pl-hugo">—</span>
+    <div class="pilot-card">
+      <div class="pc-top">
+        <div class="pc-strip" style="background:var(--hugo)"></div>
+        <div>
+          <div class="pc-name" style="color:var(--hugo)">Hugo</div>
+          <div class="pc-legs">Leg 1 (145 min) · Vol local (79 min) = 224 min = 3h44</div>
+        </div>
       </div>
-      <div class="p-right">
-        <div class="p-total" id="pt-hugo">—</div>
-        <div class="p-airbnb" id="pa-hugo"></div>
+      <div class="pc-amounts">
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Brut sans bonus</div>
+          <div class="pc-amt-val">485,34 €</div>
+        </div>
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Remise reçue</div>
+          <div class="pc-amt-val" style="color:#059669">−43,33 €</div>
+        </div>
+        <div class="pc-amt accent">
+          <div class="pc-amt-lbl">Net vols</div>
+          <div class="pc-amt-val">442,01 €</div>
+        </div>
       </div>
-      <div class="p-bar-row" id="pbar-hugo" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bf-hugo" style="background:var(--hugo)"></div></div>
-        <span class="bar-lbl" id="bl-hugo"></span>
-      </div>
-      <div class="p-meta-row" id="pm-hugo" style="display:none">
-        <span class="p-time" id="ptime-hugo"></span>
-        <span class="p-delta" id="pdelta-hugo"></span>
-      </div>
-    </div>
-
-    <div class="pilot-card" id="pc-yanis">
-      <div class="p-strip" id="ps-yanis" style="background:var(--yanis)"></div>
-      <div class="p-name-legs">
-        <span class="p-name" style="color:var(--yanis)">Yanis</span>
-        <span class="p-legs-inline" id="pl-yanis">—</span>
-      </div>
-      <div class="p-right">
-        <div class="p-total" id="pt-yanis">—</div>
-        <div class="p-airbnb" id="pa-yanis"></div>
-      </div>
-      <div class="p-bar-row" id="pbar-yanis" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bf-yanis" style="background:var(--yanis)"></div></div>
-        <span class="bar-lbl" id="bl-yanis"></span>
-      </div>
-      <div class="p-meta-row" id="pm-yanis" style="display:none">
-        <span class="p-time" id="ptime-yanis"></span>
-        <span class="p-delta" id="pdelta-yanis"></span>
+      <div class="pc-bar-row">
+        <div class="bar-bg"><div class="bar-fill" style="background:var(--hugo);width:33.3%"></div></div>
+        <span class="bar-lbl">224/672 = 33,3 % du vol total</span>
       </div>
     </div>
 
-    <div class="pilot-card" id="pc-cedric">
-      <div class="p-strip" id="ps-cedric" style="background:var(--cedric)"></div>
-      <div class="p-name-legs">
-        <span class="p-name" style="color:var(--cedric)">Cédric</span>
-        <span class="p-legs-inline" id="pl-cedric">—</span>
+    <div class="pilot-card">
+      <div class="pc-top">
+        <div class="pc-strip" style="background:var(--yanis)"></div>
+        <div>
+          <div class="pc-name" style="color:var(--yanis)">Yanis</div>
+          <div class="pc-legs">Leg 2 (120 min) · Leg 5 (99 min) = 219 min = 3h39</div>
+        </div>
       </div>
-      <div class="p-right">
-        <div class="p-total" id="pt-cedric">—</div>
-        <div class="p-airbnb" id="pa-cedric"></div>
+      <div class="pc-amounts">
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Brut sans bonus</div>
+          <div class="pc-amt-val">474,50 €</div>
+        </div>
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Remise reçue</div>
+          <div class="pc-amt-val" style="color:#059669">−42,36 €</div>
+        </div>
+        <div class="pc-amt accent">
+          <div class="pc-amt-lbl">Net vols</div>
+          <div class="pc-amt-val">432,14 €</div>
+        </div>
       </div>
-      <div class="p-bar-row" id="pbar-cedric" style="display:none">
-        <div class="bar-bg"><div class="bar-fill" id="bf-cedric" style="background:var(--cedric)"></div></div>
-        <span class="bar-lbl" id="bl-cedric"></span>
+      <div class="pc-bar-row">
+        <div class="bar-bg"><div class="bar-fill" style="background:var(--yanis);width:32.6%"></div></div>
+        <span class="bar-lbl">219/672 = 32,6 % du vol total</span>
       </div>
-      <div class="p-meta-row" id="pm-cedric" style="display:none">
-        <span class="p-time" id="ptime-cedric"></span>
-        <span class="p-delta" id="pdelta-cedric"></span>
+    </div>
+
+    <div class="pilot-card">
+      <div class="pc-top">
+        <div class="pc-strip" style="background:var(--cedric)"></div>
+        <div>
+          <div class="pc-name" style="color:var(--cedric)">Cédric</div>
+          <div class="pc-legs">Leg 3 (101 min) · Leg 4 (128 min) = 229 min = 3h49</div>
+        </div>
+      </div>
+      <div class="pc-amounts">
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Brut sans bonus</div>
+          <div class="pc-amt-val">496,16 €</div>
+        </div>
+        <div class="pc-amt">
+          <div class="pc-amt-lbl">Remise reçue</div>
+          <div class="pc-amt-val" style="color:#059669">−44,30 €</div>
+        </div>
+        <div class="pc-amt accent">
+          <div class="pc-amt-lbl">Net vols</div>
+          <div class="pc-amt-val">451,86 €</div>
+        </div>
+      </div>
+      <div class="pc-bar-row">
+        <div class="bar-bg"><div class="bar-fill" style="background:var(--cedric);width:34.1%"></div></div>
+        <span class="bar-lbl">229/672 = 34,1 % du vol total</span>
       </div>
     </div>
 
   </div>
 
-  <!-- Fairness -->
-  <div class="fair-card">
-    <div>
-      <div class="fair-label">Écart max entre pilotes</div>
-      <div class="fair-num" id="ecart">—</div>
+  <!-- Global summary -->
+  <div class="global-summary">
+
+    <div class="gs-row">
+      <div class="gs-cell" style="border-left:3px solid var(--hugo)">
+        <div class="gs-name" style="color:var(--hugo)">Hugo</div>
+        <div class="gs-time">3h44 <span class="gs-min">(224 min)</span></div>
+        <div class="gs-cost">442,01 €</div>
+        <div class="gs-sublbl">net après bonus</div>
+      </div>
+      <div class="gs-cell" style="border-left:3px solid var(--yanis)">
+        <div class="gs-name" style="color:var(--yanis)">Yanis</div>
+        <div class="gs-time">3h39 <span class="gs-min">(219 min)</span></div>
+        <div class="gs-cost">432,14 €</div>
+        <div class="gs-sublbl">net après bonus</div>
+      </div>
+      <div class="gs-cell" style="border-left:3px solid var(--cedric)">
+        <div class="gs-name" style="color:var(--cedric)">Cédric</div>
+        <div class="gs-time">3h49 <span class="gs-min">(229 min)</span></div>
+        <div class="gs-cost">451,86 €</div>
+        <div class="gs-sublbl">net après bonus</div>
+      </div>
+      <div class="gs-cell gs-total">
+        <div class="gs-name" style="color:#fff">Total</div>
+        <div class="gs-time" style="color:#e5e7eb">11h12 <span class="gs-min">(672 min)</span></div>
+        <div class="gs-cost" style="color:#fff">1 326,01 €</div>
+        <div class="gs-sublbl" style="color:#9ca3af">payé · 130 €/h · −130 € bonus</div>
+      </div>
     </div>
-    <div class="chip" id="chip" style="background:#f3f4f6;color:#9ca3af;">
-      <div class="chip-dot" id="chip-dot" style="background:#d1d5db"></div>
-      <span id="chip-txt">En attente</span>
+
+    <div class="gs-ecart">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+      Écart max entre pilotes : <strong>19,87 €</strong> — répartition très équitable
     </div>
+
   </div>
 
-  <!-- Airbnb -->
-  <div class="airbnb-row">
-    <span>Airbnb partagé — 186 € total</span>
-    <span class="mono" style="font-size:.73rem;color:#374151;">+ 62 € / personne</span>
-  </div>
-
-  <!-- Split panel -->
-  <div class="split-panel" id="split-panel" style="display:none">
-    <div class="split-hdr">
-      <span class="split-title">Si on divise le total à 3 parts égales</span>
-      <span class="split-share" id="split-share">—</span>
+  <!-- Aerogest -->
+  <div class="aero-panel">
+    <div class="aero-hdr">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <div>
+        <div class="aero-title">Procédure Aerogest — comment récupérer le bonus</div>
+        <div class="aero-sub">130 € à distribuer au pro-rata des minutes volées (672 min total)</div>
+      </div>
     </div>
-    <div class="split-rows" id="split-rows"></div>
+    <div class="aero-steps">
+
+      <div class="aero-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Chaque pilote entre ses propres vols</strong> sur Aerogest au taux normal 130 €/h.
+          <div class="xfer-rows" style="margin-top:.4rem;">
+            <div class="xfer-row">
+              <span class="xfer-from" style="color:var(--hugo);font-weight:600;">Hugo</span>
+              <span class="xfer-formula">224 min × 130/60</span>
+              <span class="xfer-amount">485,34 €</span>
+            </div>
+            <div class="xfer-row">
+              <span class="xfer-from" style="color:var(--yanis);font-weight:600;">Yanis</span>
+              <span class="xfer-formula">219 min × 130/60</span>
+              <span class="xfer-amount">474,50 €</span>
+            </div>
+            <div class="xfer-row">
+              <span class="xfer-from" style="color:var(--cedric);font-weight:600;">Cédric</span>
+              <span class="xfer-formula">229 min × 130/60</span>
+              <span class="xfer-amount">496,16 €</span>
+            </div>
+            <div class="xfer-row" style="background:#f3f4f6;">
+              <span class="xfer-from">Total débité</span>
+              <span class="xfer-formula">672 min × 130/60</span>
+              <span class="xfer-amount">1 456,00 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="aero-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Cédric dépose 1 300 €</strong> d'un coup sur son compte Aerogest
+          pour déclencher le bonus de 130 €.
+          <div class="highlight-box">
+            💡 Cédric est choisi car il a le plus volé (229 min = 34,1 %) → il capte
+            la plus grosse part du bonus (44,30 €), ce qui réduit ses transferts vers les autres.
+          </div>
+        </div>
+      </div>
+
+      <div class="aero-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Cédric redistribue les 130 €</strong> via transferts Aerogest,
+          au pro-rata des minutes de chacun :
+          <div class="xfer-rows">
+            <div class="xfer-row">
+              <span class="xfer-from">Cédric → <strong style="color:var(--hugo)">Hugo</strong></span>
+              <span class="xfer-formula">224/672 × 130</span>
+              <span class="xfer-amount">43,33 €</span>
+            </div>
+            <div class="xfer-row">
+              <span class="xfer-from">Cédric → <strong style="color:var(--yanis)">Yanis</strong></span>
+              <span class="xfer-formula">219/672 × 130</span>
+              <span class="xfer-amount">42,36 €</span>
+            </div>
+            <div class="xfer-row">
+              <span class="xfer-from">Cédric garde</span>
+              <span class="xfer-formula">229/672 × 130</span>
+              <span class="xfer-amount">44,30 €</span>
+            </div>
+            <div class="xfer-row" style="background:#f3f4f6;">
+              <span class="xfer-from">Total redistribué</span>
+              <span class="xfer-formula"></span>
+              <span class="xfer-amount">≈ 129,99 € ≈ 130 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="aero-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Coût net final par pilote</strong> après redistribution du bonus :
+          <div class="net-rows">
+            <div class="net-row" style="background:var(--hugo-light)">
+              <span class="net-pilot" style="color:var(--hugo)">Hugo</span>
+              <span class="net-formula">485,34 € − 43,33 € bonus</span>
+              <span class="net-total" style="color:var(--hugo)">442,01 €</span>
+            </div>
+            <div class="net-row" style="background:var(--yanis-light)">
+              <span class="net-pilot" style="color:var(--yanis)">Yanis</span>
+              <span class="net-formula">474,50 € − 42,36 € bonus</span>
+              <span class="net-total" style="color:var(--yanis)">432,14 €</span>
+            </div>
+            <div class="net-row" style="background:var(--cedric-light)">
+              <span class="net-pilot" style="color:var(--cedric)">Cédric</span>
+              <span class="net-formula">496,16 € − 44,30 € bonus</span>
+              <span class="net-total" style="color:var(--cedric)">451,86 €</span>
+            </div>
+            <div class="net-row" style="background:#f3f4f6;">
+              <span class="net-pilot" style="color:#374151">Total</span>
+              <span class="net-formula"></span>
+              <span class="net-total">1 326,01 € ≈ 1 326 €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 </div>
-
-<script>
-const LEGS = {
-  leg1: { label:'Leg 1',     cost:315, min:160, annecy:false },
-  leg2: { label:'Leg 2',     cost:236, min:120, annecy:true  },
-  vol:  { label:'Vol local', cost:138, min:70,  annecy:true  },
-  leg3: { label:'Leg 3',     cost:276, min:140, annecy:true  },
-  leg4: { label:'Leg 4',     cost:167, min:85,  annecy:false },
-  leg5: { label:'Leg 5',     cost:168, min:85,  annecy:false },
-};
-const SEQ    = ['leg1','leg2','vol','leg3','leg4','leg5'];
-const PILOTS = ['Hugo','Yanis','Cédric'];
-const AIRBNB = 62;
-const KEY = { 'Hugo':'hugo', 'Yanis':'yanis', 'Cédric':'cedric' };
-const COL = { 'Hugo':'var(--hugo)', 'Yanis':'var(--yanis)', 'Cédric':'var(--cedric)' };
-const CLS = { 'Hugo':'is-hugo', 'Yanis':'is-yanis', 'Cédric':'is-cedric' };
-const $ = id => document.getElementById(id);
-
-function fmtMin(m) { return Math.floor(m/60)+'h'+String(m%60).padStart(2,'0'); }
-function consecOn() { return $('toggle-consec').checked; }
-function dailyOn()  { return $('toggle-daily').checked; }
-
-// Day 1: leg1, leg2, vol — Day 2: leg3, leg4, leg5
-function getDailyViolations(a) {
-  if (!dailyOn()) return [];
-  const day1 = ['leg1','leg2','vol'];
-  const day2 = ['leg3','leg4','leg5'];
-  const missing = [];
-  PILOTS.forEach(p => {
-    if (!day1.some(k => a[k] === p)) missing.push(p + ' ne vole pas le mardi');
-    if (!day2.some(k => a[k] === p)) missing.push(p + ' ne vole pas le mercredi');
-  });
-  return missing;
-}
-
-function lockOn() { return $('sel-leg4').disabled; }
-
-function getA() {
-  return {
-    leg1: $('sel-leg1').value,
-    leg2: $('sel-leg2').value,
-    vol:  $('sel-vol').value,
-    leg3: $('sel-leg3').value,
-    leg4: lockOn() ? 'Cédric' : $('sel-leg4').value,
-    leg5: $('sel-leg5').value,
-  };
-}
-
-function setA(a) {
-  $('sel-leg1').value = a.leg1||'';
-  $('sel-leg2').value = a.leg2||'';
-  $('sel-vol').value  = a.vol||'';
-  $('sel-leg3').value = a.leg3||'';
-  if (!lockOn()) $('sel-leg4').value = a.leg4||'';
-  $('sel-leg5').value = a.leg5||'';
-  update();
-}
-
-function toggleLock() {
-  const locked = lockOn();
-  const sel  = $('sel-leg4');
-  const card = $('card-leg4');
-  const tag  = $('leg4-tag');
-  const cbar = $('cbar');
-  const btn  = $('cbar-btn');
-  const txt  = $('cbar-txt');
-
-  if (locked) {
-    // Unlock
-    sel.disabled = false;
-    sel.value = 'Cédric';
-    sel.className = 'psel is-cedric';
-    card.classList.remove('locked');
-    tag.style.display = 'none';
-    cbar.classList.add('unlocked');
-    txt.textContent = 'Leg 4 libre — plus de contrainte';
-    btn.textContent = 'Rétablir';
-  } else {
-    // Lock back
-    sel.disabled = true;
-    sel.value = 'Cédric';
-    sel.className = 'psel is-cedric';
-    card.classList.add('locked');
-    tag.style.display = '';
-    cbar.classList.remove('unlocked');
-    txt.textContent = 'Contrainte imposée — Cédric doit faire le Leg 4 (Saint-Dié → Verdun)';
-    btn.textContent = 'Enlever';
-  }
-  update();
-}
-
-function getViolations(a) {
-  if (!consecOn()) return [];
-  const v = [];
-  for (let i = 0; i < SEQ.length - 1; i++) {
-    const k1 = SEQ[i], k2 = SEQ[i+1];
-    if (a[k1] && a[k2] && a[k1] === a[k2])
-      v.push(LEGS[k1].label + ' & ' + LEGS[k2].label);
-  }
-  return v;
-}
-
-function isValid(a, enforceConsec, enforceDaily) {
-  const ann = new Set(['leg2','vol','leg3'].map(k => a[k]));
-  if (!PILOTS.every(p => ann.has(p))) return false;
-  if (enforceConsec && getViolations(a).length > 0) return false;
-  if (enforceDaily  && getDailyViolations(a).length > 0) return false;
-  return true;
-}
-
-function update() {
-  const a = getA();
-  const costs = {Hugo:0,Yanis:0,'Cédric':0};
-  const mins  = {Hugo:0,Yanis:0,'Cédric':0};
-  const legs  = {Hugo:[],Yanis:[],'Cédric':[]};
-
-  for (const [k,p] of Object.entries(a)) {
-    if (p && LEGS[k]) {
-      costs[p] += LEGS[k].cost;
-      mins[p]  += LEGS[k].min;
-      legs[p].push(LEGS[k].label + ' (' + LEGS[k].cost + '€)');
-    }
-  }
-
-  // Color selects
-  ['leg1','leg2','vol','leg3','leg5'].forEach(k => {
-    const s = $('sel-'+k);
-    s.className = 'psel' + (s.value ? ' '+CLS[s.value] : '');
-  });
-  if (!lockOn()) {
-    const s4 = $('sel-leg4');
-    s4.className = 'psel' + (s4.value ? ' '+CLS[s4.value] : '');
-  }
-
-  // Consecutive violations
-  const viols = getViolations(a);
-  ['leg1','leg2','vol','leg3','leg4','leg5'].forEach(k => {
-    const card = $('card-'+k);
-    if (!card) return;
-    const bad = consecOn() && viols.some(v => v.includes(LEGS[k].label));
-    card.classList.toggle('bad', bad);
-  });
-
-  const wc = $('w-consec');
-  if (consecOn() && viols.length) {
-    wc.textContent = '⚠ Legs consécutifs par le même pilote : ' + viols.join(', ');
-    wc.classList.add('on');
-  } else {
-    wc.classList.remove('on');
-  }
-
-  const allOk = Object.values(a).every(v => v);
-  $('w-unassigned').classList.toggle('on', !allOk);
-
-  // Annecy check (for warning only)
-  const annMap = {Hugo:[],Yanis:[],'Cédric':[]};
-  ['leg2','vol','leg3'].forEach(k => { if (a[k]) annMap[a[k]].push(LEGS[k].label); });
-  const annOk = PILOTS.every(p => annMap[p].length > 0);
-  $('w-annecy').classList.toggle('on', allOk && !annOk);
-
-  // Pilot cards — partial update even when not all assigned
-  const maxC = allOk ? Math.max(...Object.values(costs)) : 0;
-
-  PILOTS.forEach(p => {
-    const k = KEY[p];
-    $('pt-'+k).textContent  = costs[p] > 0 ? costs[p]+' €' : '—';
-    $('pl-'+k).textContent  = legs[p].length ? legs[p].join(' · ') : '—';
-    $('pa-'+k).textContent  = allOk ? 'avec Airbnb : '+(costs[p]+AIRBNB)+' €' : '';
-    const showBar = allOk;
-    $('pbar-'+k).style.display = showBar ? 'flex' : 'none';
-    if (showBar) {
-      const pct    = maxC > 0 ? Math.round((costs[p]/maxC)*100) : 0;
-      const total  = Object.values(costs).reduce((s,v)=>s+v,0);
-      const share  = total > 0 ? Math.round((costs[p]/total)*100) : 0;
-      $('bf-'+k).style.width = pct+'%';
-      $('bl-'+k).textContent = share+'% du total vols';
-    }
-    $('pm-'+k).style.display = 'none';
-  });
-
-  // Fairness & split — only when all assigned
-  if (!allOk) {
-    $('ecart').textContent = '—'; $('ecart').style.color = '#111827';
-    $('chip-dot').style.background = '#d1d5db';
-    $('chip-txt').textContent = "En attente";
-    $('chip').style.cssText = 'background:#f3f4f6;color:#9ca3af;';
-    $('split-panel').style.display = 'none';
-    return;
-  }
-
-  const vals  = Object.values(costs);
-  const ecart = Math.max(...vals) - Math.min(...vals);
-  $('ecart').textContent = ecart+' €';
-  const good = ecart<=50, mid = ecart<=150;
-  const col = good?'#059669':mid?'#d97706':'#dc2626';
-  const bgc = good?'#ecfdf5':mid?'#fffbeb':'#fef2f2';
-  $('ecart').style.color = col;
-  $('chip-dot').style.background = col;
-  $('chip').style.cssText = `background:${bgc};color:${col};`;
-  $('chip-txt').textContent = good?'Très équitable ✓':mid?'Acceptable':'Écart important';
-
-  // Split by 3
-  const total = Object.values(costs).reduce((s,v)=>s+v,0);
-  const share = Math.round(total/3);
-  $('split-share').textContent = share+' € / pers.';
-  $('split-panel').style.display = 'block';
-
-  $('split-rows').innerHTML = PILOTS.map(p => {
-    const k    = KEY[p];
-    const paid = costs[p];
-    const diff = paid - share;
-    const abs  = Math.abs(diff);
-    const dcls = diff>0?'delta-pos':diff<0?'delta-neg':'delta-zero';
-    const sign = diff>0?'+':diff<0?'−':'=';
-    const note = diff>0?`reçoit ${abs} €`:diff<0?`doit ${abs} €`:'pile poil';
-
-    // update meta row in pilot card
-    $('pm-'+k).style.display = 'flex';
-    $('ptime-'+k).textContent = fmtMin(mins[p]);
-    $('pdelta-'+k).textContent = (diff>0?'+':diff<0?'−':'')+abs+' €';
-    $('pdelta-'+k).className = 'p-delta '+dcls;
-
-    return `<div class="split-row">
-      <span class="split-name" style="color:${COL[p]}">${p}</span>
-      <span class="split-paid">payé ${paid} €</span>
-      <span class="split-diff ${dcls}">${sign} ${abs} €</span>
-      <span class="split-note">${note}</span>
-    </div>`;
-  }).join('');
-}
-
-let currentProposalIdx = null;
-
-function showProposals() {
-  const free = lockOn()
-    ? ['leg1','leg2','vol','leg3','leg5']
-    : ['leg1','leg2','vol','leg3','leg4','leg5'];
-
-  const results = [];
-  const seen = new Set();
-
-  function go(i, cur) {
-    if (i === free.length) {
-      const full = lockOn() ? {...cur, leg4:'Cédric'} : {...cur};
-      if (!isValid(full, consecOn(), dailyOn())) return;
-      const c = {Hugo:0,Yanis:0,'Cédric':0};
-      for (const [k,p] of Object.entries(full)) c[p] += LEGS[k].cost;
-      const vals = Object.values(c);
-      const ecart = Math.max(...vals) - Math.min(...vals);
-      // Deduplicate by cost distribution (not assignment — different assignments same costs count once)
-      const sig = PILOTS.map(p => p+':'+c[p]).join('|');
-      if (!seen.has(sig)) {
-        seen.add(sig);
-        results.push({ a: {...full}, costs: {...c}, ecart });
-      }
-      return;
-    }
-    for (const p of PILOTS) { cur[free[i]] = p; go(i+1, cur); }
-  }
-  go(0, {});
-
-  results.sort((a,b) => a.ecart - b.ecart);
-  const top = results.slice(0, 6);
-
-  if (!top.length) {
-    alert('Aucune combinaison valide avec ces contraintes.');
-    return;
-  }
-
-  $('proposals-list').innerHTML = top.map((r, i) => {
-    const isGood = r.ecart <= 50, isMid = r.ecart <= 150;
-    const col = isGood ? '#059669' : isMid ? '#d97706' : '#dc2626';
-    return `<div class="proposal-row" onclick="applyProposal(${i})" id="prop-row-${i}">
-      <span class="prop-pill">Choix ${i+1}</span>
-      <span class="prop-ecart" style="color:${col}">${r.ecart} € d'écart</span>
-    </div>`;
-  }).join('');
-
-  // Store for apply
-  window._proposals = top;
-  currentProposalIdx = null;
-  $('proposals-panel').style.display = 'block';
-}
-
-function applyProposal(i) {
-  const r = window._proposals[i];
-  if (!r) return;
-  // Highlight active
-  document.querySelectorAll('.proposal-row').forEach((el,j) => {
-    el.classList.toggle('is-active', j === i);
-  });
-  currentProposalIdx = i;
-  setA(r.a);
-}
-
-function resetAll() {
-  ['sel-leg1','sel-leg2','sel-vol','sel-leg3','sel-leg5'].forEach(id => $(id).value = '');
-  update();
-}
-
-update();
-showProposals();
-</script>
 </body>
 </html>
