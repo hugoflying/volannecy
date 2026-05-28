@@ -69,9 +69,9 @@ h1    { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heigh
 /* Global */
 .global-card {
   background: #111827; border-radius: var(--r); padding: 1rem 1.1rem;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem;
 }
-@media(max-width: 400px) { .global-card { grid-template-columns: 1fr 1fr; } }
+@media(max-width: 500px) { .global-card { grid-template-columns: 1fr 1fr; } }
 .gc-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; margin-bottom: 4px; }
 .gc-val { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #fff; line-height: 1; }
 .gc-sub { font-family: 'DM Mono', monospace; font-size: .58rem; color: #4b5563; margin-top: 3px; }
@@ -225,9 +225,14 @@ h1    { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heigh
       <div class="gc-sub">−130 € bonus</div>
     </div>
     <div>
-      <div class="gc-lbl">Écart pilotes</div>
+      <div class="gc-lbl">Écart pilotes — prix</div>
       <div class="gc-val" style="color:#34d399">19,87 €</div>
       <div class="gc-sub">très équitable ✓</div>
+    </div>
+    <div>
+      <div class="gc-lbl">Écart pilotes — temps</div>
+      <div class="gc-val" style="color:#34d399">10 min</div>
+      <div class="gc-sub">229 − 219 min</div>
     </div>
   </div>
 
