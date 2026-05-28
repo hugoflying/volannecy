@@ -46,16 +46,21 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
   gap: .4rem;
 }
 
-.lc-top    { display: flex; justify-content: space-between; align-items: flex-start; }
+.lc-top    { display: flex; justify-content: space-between; align-items: center; margin-bottom: .35rem; }
 .lc-id     { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; }
-.lc-time   { font-family: 'DM Mono', monospace; font-size: .7rem; font-weight: 500; color: #374151; }
-.lc-route  { font-size: .92rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
-.lc-note   { font-family: 'DM Mono', monospace; font-size: .58rem; color: #9ca3af; }
-.lc-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: .45rem; border-top: .5px solid #f3f4f6; }
 .lc-pilot  { font-size: .72rem; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
-.lc-cost   { text-align: right; }
-.lc-gross  { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; text-decoration: line-through; display: block; line-height: 1; }
-.lc-net    { font-family: 'DM Mono', monospace; font-size: .88rem; font-weight: 500; color: #111827; }
+.lc-route  { font-size: .95rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; margin-bottom: .55rem; }
+.lc-times  { display: flex; flex-direction: column; gap: 5px; border-top: .5px solid #f3f4f6; padding-top: .55rem; }
+.lc-row    { display: flex; align-items: center; gap: .4rem; }
+.lc-lbl    { font-size: .7rem; color: #9ca3af; width: 36px; flex-shrink: 0; }
+.lc-t      { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
+.lc-sep    { font-size: .72rem; color: #d1d5db; flex-shrink: 0; }
+.lc-c      { font-size: .82rem; font-weight: 500; color: #374151; white-space: nowrap; }
+.lc-diff   { margin-left: auto; font-size: .7rem; font-weight: 600; padding: 1px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.lc-diff.green { color: #059669; background: #ecfdf5; }
+.lc-diff.red   { color: #dc2626; background: #fef2f2; }
+.lc-diff.grey  { color: #9ca3af; background: #f3f4f6; }
+.lc-orig   { font-size: .65rem; color: #9ca3af; white-space: nowrap; margin-left: auto; }
 
 /* Pilot cards */
 .pilot-grid { display: grid; gap: .5rem; grid-template-columns: repeat(3, 1fr); }
@@ -133,29 +138,29 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
     <div class="legs-grid">
 
       <div class="leg-card" style="border-left:3px solid var(--hugo)">
-        <div class="lc-top"><span class="lc-id">Leg 1</span><span class="lc-time">2h25</span></div>
+        <div class="lc-top"><span class="lc-id">Leg 1</span><span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span></div>
         <div class="lc-route">Beauvais → Beaune</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span>
-          <div class="lc-cost"><span class="lc-gross">314,17 €</span><span class="lc-net">286,12 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h40</span><span class="lc-sep">·</span><span class="lc-c">346,67 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h25</span><span class="lc-sep">·</span><span class="lc-c">314,17 €</span><span class="lc-diff green">−15 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--yanis)">
-        <div class="lc-top"><span class="lc-id">Leg 2</span><span class="lc-time">2h00</span></div>
+        <div class="lc-top"><span class="lc-id">Leg 2</span><span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span></div>
         <div class="lc-route">Beaune → Annecy</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span>
-          <div class="lc-cost"><span class="lc-gross">260,00 €</span><span class="lc-net">236,79 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h00</span><span class="lc-sep">·</span><span class="lc-c">260,00 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h00</span><span class="lc-sep">·</span><span class="lc-c">260,00 €</span><span class="lc-diff grey">= exact</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--hugo)">
-        <div class="lc-top"><span class="lc-id">Vol local</span><span class="lc-time">1h19</span></div>
+        <div class="lc-top"><span class="lc-id">Vol local</span><span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span></div>
         <div class="lc-route">Annecy ↺</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span>
-          <div class="lc-cost"><span class="lc-gross">171,17 €</span><span class="lc-net">155,89 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h10</span><span class="lc-sep">·</span><span class="lc-c">151,67 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h19</span><span class="lc-sep">·</span><span class="lc-c">171,17 €</span><span class="lc-diff red">+9 min</span></div>
         </div>
       </div>
 
@@ -168,31 +173,29 @@ h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-heig
     <div class="legs-grid">
 
       <div class="leg-card" style="border-left:3px solid var(--cedric)">
-        <div class="lc-top"><span class="lc-id">Leg 3</span><span class="lc-time">1h41</span></div>
+        <div class="lc-top"><span class="lc-id">Leg 3</span><span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span></div>
         <div class="lc-route">Annecy → Montbéliard</div>
-        <div class="lc-note">destination modifiée avant vol</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span>
-          <div class="lc-cost"><span class="lc-gross">218,83 €</span><span class="lc-net">199,29 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">2h20</span><span class="lc-sep">·</span><span class="lc-c">303,33 €</span><span class="lc-orig">Annecy→S.Dié</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h41</span><span class="lc-sep">·</span><span class="lc-c">218,83 €</span><span class="lc-diff green">−39 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--cedric)">
-        <div class="lc-top"><span class="lc-id">Leg 4</span><span class="lc-time">2h08</span></div>
+        <div class="lc-top"><span class="lc-id">Leg 4</span><span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span></div>
         <div class="lc-route">Montbéliard → Verdun</div>
-        <div class="lc-note">destination modifiée avant vol</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span>
-          <div class="lc-cost"><span class="lc-gross">277,33 €</span><span class="lc-net">252,57 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-sep">·</span><span class="lc-c">184,17 €</span><span class="lc-orig">S.Dié→Verdun</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">2h08</span><span class="lc-sep">·</span><span class="lc-c">277,33 €</span><span class="lc-diff red">+43 min</span></div>
         </div>
       </div>
 
       <div class="leg-card" style="border-left:3px solid var(--yanis)">
-        <div class="lc-top"><span class="lc-id">Leg 5</span><span class="lc-time">1h39</span></div>
+        <div class="lc-top"><span class="lc-id">Leg 5</span><span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span></div>
         <div class="lc-route">Verdun → Beauvais</div>
-        <div class="lc-footer">
-          <span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span>
-          <div class="lc-cost"><span class="lc-gross">214,50 €</span><span class="lc-net">195,35 €</span></div>
+        <div class="lc-times">
+          <div class="lc-row"><span class="lc-lbl">Prévu</span><span class="lc-t">1h25</span><span class="lc-sep">·</span><span class="lc-c">184,17 €</span></div>
+          <div class="lc-row"><span class="lc-lbl">Réel</span><span class="lc-t">1h39</span><span class="lc-sep">·</span><span class="lc-c">214,50 €</span><span class="lc-diff red">+14 min</span></div>
         </div>
       </div>
 
