@@ -3,147 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bilan du vol — 26-27 mai 2026</title>
+<title>Bilan vol — 26-27 mai 2026</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --hugo:         #2563eb;
-  --hugo-light:   #eff6ff;
-  --yanis:        #059669;
-  --yanis-light:  #ecfdf5;
-  --cedric:       #d97706;
-  --cedric-light: #fffbeb;
+  --hugo:        #2563eb;
+  --hugo-bg:     #eff6ff;
+  --yanis:       #059669;
+  --yanis-bg:    #ecfdf5;
+  --cedric:      #d97706;
+  --cedric-bg:   #fffbeb;
   --r: 10px;
 }
 *, body { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
-body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
-
-.wrap { max-width: 820px; margin: 0 auto; }
+body    { background: #f4f3ef; padding: 1.25rem 1rem 3rem; }
+.wrap   { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
 
 /* Header */
-.hdr { border-bottom: 2px solid #111827; padding-bottom: .75rem; margin-bottom: 1.5rem;
-       display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:.5rem; }
-.hdr h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
-.hdr-sub { font-family: 'DM Mono', monospace; font-size: .65rem; color: #9ca3af; text-transform: uppercase; letter-spacing: .1em; }
+.hdr   { border-bottom: 2px solid #111827; padding-bottom: .75rem;
+         display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: .5rem; }
+h1     { font-size: 1.75rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.sub   { font-family: 'DM Mono', monospace; font-size: .63rem; color: #9ca3af;
+         text-transform: uppercase; letter-spacing: .1em; }
+.mono  { font-family: 'DM Mono', monospace; }
 
-/* Rate note */
-.rate-note { background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--r);
-             padding:.6rem .9rem; font-family:'DM Mono',monospace; font-size:.7rem;
-             color:#1d4ed8; margin-bottom:1.25rem; display:flex; gap:.5rem; align-items:flex-start; }
+/* Section */
+.sec-title { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase;
+             letter-spacing: .12em; color: #9ca3af; margin-bottom: .6rem; }
 
-/* Section label */
-.sec-lbl { font-family:'DM Mono',monospace; font-size:.62rem; text-transform:uppercase;
-           letter-spacing:.12em; color:#9ca3af; border-bottom:.5px solid #e5e7eb;
-           padding-bottom:.4rem; margin-bottom:.75rem; }
+/* Leg cards */
+.legs-grid { display: grid; gap: .5rem; grid-template-columns: 1fr; }
+@media(min-width: 540px) { .legs-grid { grid-template-columns: repeat(3, 1fr); } }
 
-/* Legs grid */
-.legs-grid { display:grid; gap:.6rem; grid-template-columns:1fr; margin-bottom:1.25rem; }
-@media(min-width:600px){ .legs-grid { grid-template-columns:repeat(3,1fr); } }
+.leg-card {
+  background: #fff;
+  border-radius: var(--r);
+  border: 1px solid #e5e7eb;
+  padding: .85rem .9rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
 
-.leg-card { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r); padding:.85rem 1rem; }
-.leg-top  { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.25rem; }
-.leg-id   { font-family:'DM Mono',monospace; font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:#9ca3af; }
-.leg-route { font-size:.9rem; font-weight:500; letter-spacing:-.01em; }
-.leg-icao  { font-family:'DM Mono',monospace; font-size:.63rem; color:#9ca3af; margin-bottom:.5rem; }
-
-.chip { display:inline-flex; align-items:center; gap:4px; font-size:.73rem; font-weight:500;
-        padding:2px 9px; border-radius:20px; margin-bottom:.55rem; }
-
-/* Cost block inside card */
-.leg-costs { border-top:.5px solid #f3f4f6; padding-top:.55rem; display:flex; flex-direction:column; gap:3px; }
-.cost-row  { display:flex; justify-content:space-between; align-items:center; }
-.cost-lbl  { font-family:'DM Mono',monospace; font-size:.6rem; color:#9ca3af; }
-.cost-val  { font-family:'DM Mono',monospace; font-size:.72rem; }
-.cost-val.gross  { color:#d1d5db; text-decoration:line-through; }
-.cost-val.disc   { color:#059669; font-size:.65rem; }
-.cost-val.net    { color:#111827; font-weight:500; font-size:.82rem; }
-
-/* Time row */
-.leg-time-row { display:flex; justify-content:space-between; align-items:center;
-                margin-top:.5rem; padding-top:.5rem; border-top:.5px solid #f9fafb; }
-.leg-planned  { font-family:'DM Mono',monospace; font-size:.6rem; color:#d1d5db; }
-.leg-real     { font-family:'DM Mono',monospace; font-size:.68rem; color:#374151; font-weight:500; }
-.leg-diff     { font-family:'DM Mono',monospace; font-size:.6rem; }
+.lc-top    { display: flex; justify-content: space-between; align-items: flex-start; }
+.lc-id     { font-family: 'DM Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: #9ca3af; }
+.lc-time   { font-family: 'DM Mono', monospace; font-size: .7rem; font-weight: 500; color: #374151; }
+.lc-route  { font-size: .92rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.lc-note   { font-family: 'DM Mono', monospace; font-size: .58rem; color: #9ca3af; }
+.lc-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: .45rem; border-top: .5px solid #f3f4f6; }
+.lc-pilot  { font-size: .72rem; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+.lc-cost   { text-align: right; }
+.lc-gross  { font-family: 'DM Mono', monospace; font-size: .6rem; color: #d1d5db; text-decoration: line-through; display: block; line-height: 1; }
+.lc-net    { font-family: 'DM Mono', monospace; font-size: .88rem; font-weight: 500; color: #111827; }
 
 /* Pilot cards */
-.pilot-cards { display:flex; flex-direction:column; gap:8px; margin-bottom:.75rem; }
-.pilot-card  { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
-               padding:.85rem 1rem; }
-.pc-top      { display:flex; align-items:center; gap:.75rem; margin-bottom:.6rem; }
-.pc-strip    { width:4px; border-radius:4px; align-self:stretch; min-height:40px; flex-shrink:0; }
-.pc-name     { font-size:.95rem; font-weight:600; letter-spacing:-.02em; }
-.pc-legs     { font-family:'DM Mono',monospace; font-size:.62rem; color:#9ca3af; line-height:1.6; }
-.pc-amounts  { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-bottom:.5rem; }
-.pc-amt      { background:#f9fafb; border-radius:6px; padding:6px 8px; }
-.pc-amt-lbl  { font-family:'DM Mono',monospace; font-size:.58rem; color:#9ca3af; margin-bottom:2px; }
-.pc-amt-val  { font-family:'DM Mono',monospace; font-size:.82rem; font-weight:500; color:#111827; }
-.pc-amt.accent { background:#111827; }
-.pc-amt.accent .pc-amt-lbl { color:#9ca3af; }
-.pc-amt.accent .pc-amt-val { color:#fff; font-size:.95rem; }
-.pc-bar-row  { display:flex; align-items:center; gap:.5rem; }
-.bar-bg { flex:1; height:3px; background:#f3f4f6; border-radius:3px; overflow:hidden; }
-.bar-fill { height:100%; border-radius:3px; }
-.bar-lbl { font-family:'DM Mono',monospace; font-size:.6rem; color:#d1d5db; white-space:nowrap; }
+.pilot-grid { display: grid; gap: .5rem; grid-template-columns: repeat(3, 1fr); }
+@media(max-width: 480px) { .pilot-grid { grid-template-columns: 1fr; } }
 
-/* Summary row */
-.summary-row { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
-               padding:.8rem 1rem; display:flex; justify-content:space-between;
-               align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:.5rem; }
-.sr-left { font-size:.75rem; color:#9ca3af; }
-.sr-right { font-family:'DM Mono',monospace; font-size:.82rem; font-weight:500; }
-.badge-green { background:#ecfdf5; color:#059669; font-size:.72rem; font-weight:500;
-               padding:3px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; }
+.pilot-card {
+  background: #fff;
+  border-radius: var(--r);
+  border: 1px solid #e5e7eb;
+  padding: .85rem .9rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.pc-name   { font-size: .9rem; font-weight: 600; letter-spacing: -.02em; }
+.pc-time   { font-family: 'DM Mono', monospace; font-size: .7rem; color: #6b7280; }
+.pc-detail { font-family: 'DM Mono', monospace; font-size: .62rem; color: #9ca3af; line-height: 1.6; margin-top: .2rem; }
+.pc-total  { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; color: #111827; margin-top: auto; padding-top: .5rem; border-top: .5px solid #f3f4f6; }
+
+/* Global */
+.global-card {
+  background: #111827;
+  border-radius: var(--r);
+  padding: 1rem 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .75rem;
+}
+@media(max-width: 400px) { .global-card { grid-template-columns: 1fr 1fr; } }
+.gc-item  { }
+.gc-lbl   { font-family: 'DM Mono', monospace; font-size: .58rem; text-transform: uppercase; letter-spacing: .08em; color: #6b7280; margin-bottom: 4px; }
+.gc-val   { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: #fff; line-height: 1; }
+.gc-sub   { font-family: 'DM Mono', monospace; font-size: .58rem; color: #4b5563; margin-top: 3px; }
 
 /* Aerogest */
-.aero-panel  { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r);
-               overflow:hidden; margin-top:1rem; }
-.aero-hdr    { background:#111827; color:#fff; padding:.8rem 1rem;
-               display:flex; align-items:center; gap:.5rem; }
-.aero-title  { font-weight:600; font-size:.9rem; letter-spacing:-.02em; }
-.aero-sub    { font-family:'DM Mono',monospace; font-size:.65rem; color:#6b7280; margin-top:1px; }
-.aero-steps  { padding:.9rem 1rem; display:flex; flex-direction:column; gap:.85rem; }
-.aero-step   { display:grid; grid-template-columns:22px 1fr; gap:.5rem; align-items:start; }
-.step-num    { font-family:'DM Mono',monospace; font-size:.7rem; font-weight:500; color:#fff;
-               background:#111827; border-radius:50%; width:20px; height:20px;
-               display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.step-body   { font-size:.82rem; color:#374151; line-height:1.55; }
-.step-body strong { font-weight:600; color:#111827; }
-
-.xfer-rows   { display:flex; flex-direction:column; gap:5px; margin-top:.5rem; }
-.xfer-row    { background:#f9fafb; border-radius:6px; padding:6px 10px;
-               display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; }
-.xfer-from   { font-family:'DM Mono',monospace; font-size:.7rem; color:#6b7280; }
-.xfer-formula{ font-family:'DM Mono',monospace; font-size:.65rem; color:#9ca3af; flex:1; text-align:center; }
-.xfer-amount { font-family:'DM Mono',monospace; font-size:.75rem; font-weight:500; color:#111827; }
-
-.net-rows    { display:flex; flex-direction:column; gap:5px; margin-top:.5rem; }
-.net-row     { border-radius:6px; padding:7px 10px; display:flex;
-               align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; }
-.net-pilot   { font-size:.82rem; font-weight:600; }
-.net-formula { font-family:'DM Mono',monospace; font-size:.65rem; color:#9ca3af; flex:1; text-align:center; }
-.net-total   { font-family:'DM Mono',monospace; font-size:.85rem; font-weight:500; }
-
-.highlight-box { background:#fffbeb; border:1px solid #fcd34d; border-radius:8px;
-                 padding:.5rem .85rem; font-family:'DM Mono',monospace; font-size:.7rem;
-                 color:#92400e; margin-top:.5rem; line-height:1.5; }
-/* Global summary */
-.global-summary { margin-bottom:.75rem; }
-.gs-row  { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-bottom:.5rem; }
-@media(max-width:600px){ .gs-row { grid-template-columns:repeat(2,1fr); } }
-.gs-cell { background:#fff; border:1px solid #e5e7eb; border-radius:var(--r); padding:.85rem 1rem; }
-.gs-cell.gs-total { background:#111827; border-color:#111827; }
-.gs-name   { font-size:.9rem; font-weight:600; letter-spacing:-.02em; margin-bottom:.3rem; }
-.gs-time   { font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:#111827; line-height:1; }
-.gs-cell.gs-total .gs-time { color:#e5e7eb; }
-.gs-min    { font-size:.65rem; color:#9ca3af; font-weight:400; }
-.gs-cost   { font-family:'DM Mono',monospace; font-size:1.25rem; font-weight:500; color:#111827; margin-top:.35rem; line-height:1; }
-.gs-sublbl { font-family:'DM Mono',monospace; font-size:.58rem; color:#9ca3af; margin-top:.25rem; }
-.gs-ecart  { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:.5rem .9rem;
-             font-family:'DM Mono',monospace; font-size:.7rem; color:#065f46;
-             display:flex; align-items:center; gap:.4rem; }
-
-.divider { border:none; border-top:1px solid #f3f4f6; margin:.85rem 0; }
+.aero-card { background: #fff; border-radius: var(--r); border: 1px solid #e5e7eb; overflow: hidden; }
+.aero-hdr  { background: #111827; padding: .65rem 1rem; }
+.aero-ht   { font-weight: 600; font-size: .88rem; color: #fff; }
+.aero-hs   { font-family: 'DM Mono', monospace; font-size: .6rem; color: #6b7280; margin-top: 1px; }
+.aero-body { padding: .85rem 1rem; display: flex; flex-direction: column; gap: .7rem; }
+.a-step    { display: grid; grid-template-columns: 18px 1fr; gap: .5rem; align-items: start; }
+.a-n       { font-family: 'DM Mono', monospace; font-size: .62rem; font-weight: 500; color: #fff;
+             background: #111827; border-radius: 50%; width: 18px; height: 18px;
+             display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.a-t       { font-size: .82rem; color: #374151; line-height: 1.5; }
+.a-t strong { font-weight: 600; color: #111827; }
+.xfers     { margin-top: .4rem; display: flex; flex-direction: column; gap: 4px; }
+.xfer      { background: #f9fafb; border-radius: 6px; padding: 5px 10px;
+             display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.xf-l      { font-family: 'DM Mono', monospace; font-size: .67rem; color: #6b7280; }
+.xf-r      { font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500; color: #111827; }
+.tip       { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 7px;
+             padding: .4rem .75rem; font-family: 'DM Mono', monospace;
+             font-size: .67rem; color: #92400e; margin-top: .35rem; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -152,375 +118,181 @@ body { background: #f8f8f6; min-height: 100vh; padding: 1.25rem 1rem 3rem; }
   <!-- Header -->
   <div class="hdr">
     <div>
-      <p class="hdr-sub">Bilan · 26–27 mai 2026 · 3 pilotes</p>
-      <h1>Résumé du voyage</h1>
+      <p class="sub">26–27 mai 2026</p>
+      <h1>Bilan du vol</h1>
     </div>
     <div style="text-align:right">
-      <p class="hdr-sub">11h12 réelles · 1h offerte après 10h</p>
-      <p style="font-family:'DM Mono',monospace;font-size:.78rem;margin-top:3px;">
-        <span style="color:#d1d5db;text-decoration:line-through;">1 456,00 €</span>
-        &nbsp;→&nbsp;<strong>1 326,00 €</strong>
-        <span style="color:#059669;font-size:.65rem;">&minus;130,00 €</span>
-      </p>
+      <p class="sub">Hugo · Yanis · Cédric</p>
+      <p class="sub" style="margin-top:2px">130 €/h · 1h offerte</p>
     </div>
   </div>
 
-  <!-- Rate note -->
-  <div class="rate-note">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-    Taux utilisé : <strong>130 €/h</strong> = 2,1667 €/min &nbsp;·&nbsp;
-    Vérification : 79 min (vol local) × 130/60 = <strong>171,17 €</strong> ✓
-    &nbsp;·&nbsp; Note : 129,6742…€/h donnerait 170,74 € pour 79 min, pas 171,17 €.
+  <!-- Legs day 1 -->
+  <div>
+    <p class="sec-title">Mardi 26 mai</p>
+    <div class="legs-grid">
+
+      <div class="leg-card" style="border-left:3px solid var(--hugo)">
+        <div class="lc-top"><span class="lc-id">Leg 1</span><span class="lc-time">2h25</span></div>
+        <div class="lc-route">Beauvais → Beaune</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span>
+          <div class="lc-cost"><span class="lc-gross">314,17 €</span><span class="lc-net">286,12 €</span></div>
+        </div>
+      </div>
+
+      <div class="leg-card" style="border-left:3px solid var(--yanis)">
+        <div class="lc-top"><span class="lc-id">Leg 2</span><span class="lc-time">2h00</span></div>
+        <div class="lc-route">Beaune → Annecy</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span>
+          <div class="lc-cost"><span class="lc-gross">260,00 €</span><span class="lc-net">236,79 €</span></div>
+        </div>
+      </div>
+
+      <div class="leg-card" style="border-left:3px solid var(--hugo)">
+        <div class="lc-top"><span class="lc-id">Vol local</span><span class="lc-time">1h19</span></div>
+        <div class="lc-route">Annecy ↺</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--hugo-bg);color:var(--hugo)">Hugo</span>
+          <div class="lc-cost"><span class="lc-gross">171,17 €</span><span class="lc-net">155,89 €</span></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- Day 1 -->
-  <p class="sec-lbl">Mardi 26 mai 2026</p>
-  <div class="legs-grid">
+  <!-- Legs day 2 -->
+  <div>
+    <p class="sec-title">Mercredi 27 mai</p>
+    <div class="legs-grid">
 
-    <div class="leg-card" style="border-left:3px solid var(--hugo)">
-      <div class="leg-top"><span class="leg-id">Leg 1</span></div>
-      <div class="leg-route">Beauvais → Beaune</div>
-      <div class="leg-icao">LFOB → LFGF</div>
-      <span class="chip" style="background:var(--hugo-light);color:var(--hugo)">Hugo</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">314,17 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;28,05 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">286,12 €</span></div>
+      <div class="leg-card" style="border-left:3px solid var(--cedric)">
+        <div class="lc-top"><span class="lc-id">Leg 3</span><span class="lc-time">1h41</span></div>
+        <div class="lc-route">Annecy → Montbéliard</div>
+        <div class="lc-note">destination modifiée avant vol</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span>
+          <div class="lc-cost"><span class="lc-gross">218,83 €</span><span class="lc-net">199,29 €</span></div>
+        </div>
       </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 2h40</span>
-        <span class="leg-real">réel 2h25 (145 min)</span>
-        <span class="leg-diff" style="color:#059669">−15 min</span>
+
+      <div class="leg-card" style="border-left:3px solid var(--cedric)">
+        <div class="lc-top"><span class="lc-id">Leg 4</span><span class="lc-time">2h08</span></div>
+        <div class="lc-route">Montbéliard → Verdun</div>
+        <div class="lc-note">destination modifiée avant vol</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--cedric-bg);color:var(--cedric)">Cédric</span>
+          <div class="lc-cost"><span class="lc-gross">277,33 €</span><span class="lc-net">252,57 €</span></div>
+        </div>
       </div>
+
+      <div class="leg-card" style="border-left:3px solid var(--yanis)">
+        <div class="lc-top"><span class="lc-id">Leg 5</span><span class="lc-time">1h39</span></div>
+        <div class="lc-route">Verdun → Beauvais</div>
+        <div class="lc-footer">
+          <span class="lc-pilot" style="background:var(--yanis-bg);color:var(--yanis)">Yanis</span>
+          <div class="lc-cost"><span class="lc-gross">214,50 €</span><span class="lc-net">195,35 €</span></div>
+        </div>
+      </div>
+
     </div>
-
-    <div class="leg-card" style="border-left:3px solid var(--yanis)">
-      <div class="leg-top"><span class="leg-id">Leg 2</span></div>
-      <div class="leg-route">Beaune → Annecy</div>
-      <div class="leg-icao">LFGF → LFLP</div>
-      <span class="chip" style="background:var(--yanis-light);color:var(--yanis)">Yanis</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">260,00 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;23,21 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">236,79 €</span></div>
-      </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 2h00</span>
-        <span class="leg-real">réel 2h00 (120 min)</span>
-        <span class="leg-diff" style="color:#9ca3af">= exact</span>
-      </div>
-    </div>
-
-    <div class="leg-card" style="border-left:3px solid var(--hugo)">
-      <div class="leg-top"><span class="leg-id">Vol local</span></div>
-      <div class="leg-route">Annecy → Annecy</div>
-      <div class="leg-icao">LFLP · Annecy</div>
-      <span class="chip" style="background:var(--hugo-light);color:var(--hugo)">Hugo</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">171,17 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;15,28 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">155,89 €</span></div>
-      </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 1h10</span>
-        <span class="leg-real">réel 1h19 (79 min)</span>
-        <span class="leg-diff" style="color:#dc2626">+9 min</span>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Day 2 -->
-  <p class="sec-lbl">Mercredi 27 mai 2026</p>
-  <div class="legs-grid">
+  <!-- Pilots -->
+  <div>
+    <p class="sec-title">Par pilote</p>
+    <div class="pilot-grid">
 
-    <div class="leg-card" style="border-left:3px solid var(--cedric)">
-      <div class="leg-top"><span class="leg-id">Leg 3</span></div>
-      <div class="leg-route">Annecy → Montbéliard</div>
-      <div class="leg-icao">LFLP → LFGM</div>
-      <span class="chip" style="background:var(--cedric-light);color:var(--cedric)">Cédric</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">218,83 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;19,54 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">199,29 €</span></div>
+      <div class="pilot-card">
+        <div class="pc-name" style="color:var(--hugo)">Hugo</div>
+        <div class="pc-time">3h44 · 224 min</div>
+        <div class="pc-detail">
+          485,34 € brut<br>
+          − 43,33 € bonus
+        </div>
+        <div class="pc-total">442,01 €</div>
       </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 2h20 (S.Dié)</span>
-        <span class="leg-real">réel 1h41 (101 min)</span>
-        <span class="leg-diff" style="color:#059669">−39 min · destination modifiée</span>
+
+      <div class="pilot-card">
+        <div class="pc-name" style="color:var(--yanis)">Yanis</div>
+        <div class="pc-time">3h39 · 219 min</div>
+        <div class="pc-detail">
+          474,50 € brut<br>
+          − 42,36 € bonus
+        </div>
+        <div class="pc-total">432,14 €</div>
       </div>
+
+      <div class="pilot-card">
+        <div class="pc-name" style="color:var(--cedric)">Cédric</div>
+        <div class="pc-time">3h49 · 229 min</div>
+        <div class="pc-detail">
+          496,16 € brut<br>
+          − 44,30 € bonus
+        </div>
+        <div class="pc-total">451,86 €</div>
+      </div>
+
     </div>
-
-    <div class="leg-card" style="border-left:3px solid var(--cedric)">
-      <div class="leg-top"><span class="leg-id">Leg 4</span></div>
-      <div class="leg-route">Montbéliard → Verdun</div>
-      <div class="leg-icao">LFGM → LFGW</div>
-      <span class="chip" style="background:var(--cedric-light);color:var(--cedric)">Cédric</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">277,33 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;24,76 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">252,57 €</span></div>
-      </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 1h25 (S.Dié)</span>
-        <span class="leg-real">réel 2h08 (128 min)</span>
-        <span class="leg-diff" style="color:#dc2626">+43 min · destination modifiée</span>
-      </div>
-    </div>
-
-    <div class="leg-card" style="border-left:3px solid var(--yanis)">
-      <div class="leg-top"><span class="leg-id">Leg 5</span></div>
-      <div class="leg-route">Verdun → Beauvais</div>
-      <div class="leg-icao">LFGW → LFOB</div>
-      <span class="chip" style="background:var(--yanis-light);color:var(--yanis)">Yanis</span>
-      <div class="leg-costs">
-        <div class="cost-row"><span class="cost-lbl">Brut (130 €/h)</span><span class="cost-val gross">214,50 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Remise bonus</span><span class="cost-val disc">&minus;19,15 €</span></div>
-        <div class="cost-row"><span class="cost-lbl">Net</span><span class="cost-val net">195,35 €</span></div>
-      </div>
-      <div class="leg-time-row">
-        <span class="leg-planned">prévu 1h25</span>
-        <span class="leg-real">réel 1h39 (99 min)</span>
-        <span class="leg-diff" style="color:#dc2626">+14 min</span>
-      </div>
-    </div>
-
   </div>
 
-  <hr class="divider">
-
-  <!-- Pilot cards -->
-  <div class="pilot-cards">
-
-    <div class="pilot-card">
-      <div class="pc-top">
-        <div class="pc-strip" style="background:var(--hugo)"></div>
-        <div>
-          <div class="pc-name" style="color:var(--hugo)">Hugo</div>
-          <div class="pc-legs">Leg 1 (145 min) · Vol local (79 min) = 224 min = 3h44</div>
-        </div>
-      </div>
-      <div class="pc-amounts">
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Brut sans bonus</div>
-          <div class="pc-amt-val">485,34 €</div>
-        </div>
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Remise reçue</div>
-          <div class="pc-amt-val" style="color:#059669">−43,33 €</div>
-        </div>
-        <div class="pc-amt accent">
-          <div class="pc-amt-lbl">Net vols</div>
-          <div class="pc-amt-val">442,01 €</div>
-        </div>
-      </div>
-      <div class="pc-bar-row">
-        <div class="bar-bg"><div class="bar-fill" style="background:var(--hugo);width:33.3%"></div></div>
-        <span class="bar-lbl">224/672 = 33,3 % du vol total</span>
-      </div>
+  <!-- Global -->
+  <div class="global-card">
+    <div class="gc-item">
+      <div class="gc-lbl">Durée totale</div>
+      <div class="gc-val">11h12</div>
+      <div class="gc-sub">payé 10h12</div>
     </div>
-
-    <div class="pilot-card">
-      <div class="pc-top">
-        <div class="pc-strip" style="background:var(--yanis)"></div>
-        <div>
-          <div class="pc-name" style="color:var(--yanis)">Yanis</div>
-          <div class="pc-legs">Leg 2 (120 min) · Leg 5 (99 min) = 219 min = 3h39</div>
-        </div>
-      </div>
-      <div class="pc-amounts">
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Brut sans bonus</div>
-          <div class="pc-amt-val">474,50 €</div>
-        </div>
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Remise reçue</div>
-          <div class="pc-amt-val" style="color:#059669">−42,36 €</div>
-        </div>
-        <div class="pc-amt accent">
-          <div class="pc-amt-lbl">Net vols</div>
-          <div class="pc-amt-val">432,14 €</div>
-        </div>
-      </div>
-      <div class="pc-bar-row">
-        <div class="bar-bg"><div class="bar-fill" style="background:var(--yanis);width:32.6%"></div></div>
-        <span class="bar-lbl">219/672 = 32,6 % du vol total</span>
-      </div>
+    <div class="gc-item">
+      <div class="gc-lbl">Coût total</div>
+      <div class="gc-val">1 326,01 €</div>
+      <div class="gc-sub">−130 € bonus</div>
     </div>
-
-    <div class="pilot-card">
-      <div class="pc-top">
-        <div class="pc-strip" style="background:var(--cedric)"></div>
-        <div>
-          <div class="pc-name" style="color:var(--cedric)">Cédric</div>
-          <div class="pc-legs">Leg 3 (101 min) · Leg 4 (128 min) = 229 min = 3h49</div>
-        </div>
-      </div>
-      <div class="pc-amounts">
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Brut sans bonus</div>
-          <div class="pc-amt-val">496,16 €</div>
-        </div>
-        <div class="pc-amt">
-          <div class="pc-amt-lbl">Remise reçue</div>
-          <div class="pc-amt-val" style="color:#059669">−44,30 €</div>
-        </div>
-        <div class="pc-amt accent">
-          <div class="pc-amt-lbl">Net vols</div>
-          <div class="pc-amt-val">451,86 €</div>
-        </div>
-      </div>
-      <div class="pc-bar-row">
-        <div class="bar-bg"><div class="bar-fill" style="background:var(--cedric);width:34.1%"></div></div>
-        <span class="bar-lbl">229/672 = 34,1 % du vol total</span>
-      </div>
+    <div class="gc-item">
+      <div class="gc-lbl">Écart pilotes</div>
+      <div class="gc-val" style="color:#34d399">19,87 €</div>
+      <div class="gc-sub">très équitable ✓</div>
     </div>
-
-  </div>
-
-  <!-- Global summary -->
-  <div class="global-summary">
-
-    <div class="gs-row">
-      <div class="gs-cell" style="border-left:3px solid var(--hugo)">
-        <div class="gs-name" style="color:var(--hugo)">Hugo</div>
-        <div class="gs-time">3h44 <span class="gs-min">(224 min)</span></div>
-        <div class="gs-cost">442,01 €</div>
-        <div class="gs-sublbl">net après bonus</div>
-      </div>
-      <div class="gs-cell" style="border-left:3px solid var(--yanis)">
-        <div class="gs-name" style="color:var(--yanis)">Yanis</div>
-        <div class="gs-time">3h39 <span class="gs-min">(219 min)</span></div>
-        <div class="gs-cost">432,14 €</div>
-        <div class="gs-sublbl">net après bonus</div>
-      </div>
-      <div class="gs-cell" style="border-left:3px solid var(--cedric)">
-        <div class="gs-name" style="color:var(--cedric)">Cédric</div>
-        <div class="gs-time">3h49 <span class="gs-min">(229 min)</span></div>
-        <div class="gs-cost">451,86 €</div>
-        <div class="gs-sublbl">net après bonus</div>
-      </div>
-      <div class="gs-cell gs-total">
-        <div class="gs-name" style="color:#fff">Total</div>
-        <div class="gs-time" style="color:#e5e7eb">11h12 <span class="gs-min">(672 min)</span></div>
-        <div class="gs-cost" style="color:#fff">1 326,01 €</div>
-        <div class="gs-sublbl" style="color:#9ca3af">payé · 130 €/h · −130 € bonus</div>
-      </div>
-    </div>
-
-    <div class="gs-ecart">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
-      Écart max entre pilotes : <strong>19,87 €</strong> — répartition très équitable
-    </div>
-
   </div>
 
   <!-- Aerogest -->
-  <div class="aero-panel">
+  <div class="aero-card">
     <div class="aero-hdr">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      <div>
-        <div class="aero-title">Procédure Aerogest — comment récupérer le bonus</div>
-        <div class="aero-sub">130 € à distribuer au pro-rata des minutes volées (672 min total)</div>
-      </div>
+      <div class="aero-ht">Procédure Aerogest</div>
+      <div class="aero-hs">130 € à redistribuer au pro-rata</div>
     </div>
-    <div class="aero-steps">
+    <div class="aero-body">
 
-      <div class="aero-step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <strong>Chaque pilote entre ses propres vols</strong> sur Aerogest au taux normal 130 €/h.
-          <div class="xfer-rows" style="margin-top:.4rem;">
-            <div class="xfer-row">
-              <span class="xfer-from" style="color:var(--hugo);font-weight:600;">Hugo</span>
-              <span class="xfer-formula">224 min × 130/60</span>
-              <span class="xfer-amount">485,34 €</span>
-            </div>
-            <div class="xfer-row">
-              <span class="xfer-from" style="color:var(--yanis);font-weight:600;">Yanis</span>
-              <span class="xfer-formula">219 min × 130/60</span>
-              <span class="xfer-amount">474,50 €</span>
-            </div>
-            <div class="xfer-row">
-              <span class="xfer-from" style="color:var(--cedric);font-weight:600;">Cédric</span>
-              <span class="xfer-formula">229 min × 130/60</span>
-              <span class="xfer-amount">496,16 €</span>
-            </div>
-            <div class="xfer-row" style="background:#f3f4f6;">
-              <span class="xfer-from">Total débité</span>
-              <span class="xfer-formula">672 min × 130/60</span>
-              <span class="xfer-amount">1 456,00 €</span>
-            </div>
-          </div>
+      <div class="a-step">
+        <div class="a-n">1</div>
+        <div class="a-t"><strong>Chaque pilote entre ses propres vols</strong> sur Aerogest au taux normal 130 €/h.</div>
+      </div>
+
+      <div class="a-step">
+        <div class="a-n">2</div>
+        <div class="a-t">
+          <strong>Cédric dépose 1 300 €</strong> sur son compte pour déclencher le bonus de 130 €.
+          <div class="tip">💡 Cédric a le plus volé (229 min) → il capte la plus grande part du bonus.</div>
         </div>
       </div>
 
-      <div class="aero-step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <strong>Cédric dépose 1 300 €</strong> d'un coup sur son compte Aerogest
-          pour déclencher le bonus de 130 €.
-          <div class="highlight-box">
-            💡 Cédric est choisi car il a le plus volé (229 min = 34,1 %) → il capte
-            la plus grosse part du bonus (44,30 €), ce qui réduit ses transferts vers les autres.
-          </div>
-        </div>
-      </div>
-
-      <div class="aero-step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <strong>Cédric redistribue les 130 €</strong> via transferts Aerogest,
-          au pro-rata des minutes de chacun :
-          <div class="xfer-rows">
-            <div class="xfer-row">
-              <span class="xfer-from">Cédric → <strong style="color:var(--hugo)">Hugo</strong></span>
-              <span class="xfer-formula">224/672 × 130</span>
-              <span class="xfer-amount">43,33 €</span>
+      <div class="a-step">
+        <div class="a-n">3</div>
+        <div class="a-t">
+          <strong>Cédric redistribue les 130 €</strong> via transferts Aerogest :
+          <div class="xfers">
+            <div class="xfer">
+              <span class="xf-l">→ <strong style="color:var(--hugo)">Hugo</strong> &emsp; 224/672 × 130</span>
+              <span class="xf-r">43,33 €</span>
             </div>
-            <div class="xfer-row">
-              <span class="xfer-from">Cédric → <strong style="color:var(--yanis)">Yanis</strong></span>
-              <span class="xfer-formula">219/672 × 130</span>
-              <span class="xfer-amount">42,36 €</span>
+            <div class="xfer">
+              <span class="xf-l">→ <strong style="color:var(--yanis)">Yanis</strong> &emsp; 219/672 × 130</span>
+              <span class="xf-r">42,36 €</span>
             </div>
-            <div class="xfer-row">
-              <span class="xfer-from">Cédric garde</span>
-              <span class="xfer-formula">229/672 × 130</span>
-              <span class="xfer-amount">44,30 €</span>
-            </div>
-            <div class="xfer-row" style="background:#f3f4f6;">
-              <span class="xfer-from">Total redistribué</span>
-              <span class="xfer-formula"></span>
-              <span class="xfer-amount">≈ 129,99 € ≈ 130 €</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="aero-step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <strong>Coût net final par pilote</strong> après redistribution du bonus :
-          <div class="net-rows">
-            <div class="net-row" style="background:var(--hugo-light)">
-              <span class="net-pilot" style="color:var(--hugo)">Hugo</span>
-              <span class="net-formula">485,34 € − 43,33 € bonus</span>
-              <span class="net-total" style="color:var(--hugo)">442,01 €</span>
-            </div>
-            <div class="net-row" style="background:var(--yanis-light)">
-              <span class="net-pilot" style="color:var(--yanis)">Yanis</span>
-              <span class="net-formula">474,50 € − 42,36 € bonus</span>
-              <span class="net-total" style="color:var(--yanis)">432,14 €</span>
-            </div>
-            <div class="net-row" style="background:var(--cedric-light)">
-              <span class="net-pilot" style="color:var(--cedric)">Cédric</span>
-              <span class="net-formula">496,16 € − 44,30 € bonus</span>
-              <span class="net-total" style="color:var(--cedric)">451,86 €</span>
-            </div>
-            <div class="net-row" style="background:#f3f4f6;">
-              <span class="net-pilot" style="color:#374151">Total</span>
-              <span class="net-formula"></span>
-              <span class="net-total">1 326,01 € ≈ 1 326 €</span>
+            <div class="xfer">
+              <span class="xf-l"><strong style="color:var(--cedric)">Cédric</strong> garde &ensp; 229/672 × 130</span>
+              <span class="xf-r">44,30 €</span>
             </div>
           </div>
         </div>
